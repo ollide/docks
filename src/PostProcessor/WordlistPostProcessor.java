@@ -53,7 +53,7 @@ public class WordlistPostProcessor  implements StandardRecognizer{
 	public WordlistPostProcessor(String wordFile,String key) {
 		super();
 		//use a Sentencelist postprocessor internally
-		this.lr = new SentencelistPostProcessor(wordFile,1,key);
+		this.lr = new SentencelistPostProcessor(wordFile,1);
 		referenceRecognizer= -1;
 	}
 	

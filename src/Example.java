@@ -215,7 +215,7 @@ class Example {
 
 		System.out.println("Starting Google+Sentencelist");
 		SentencelistPostProcessor sentencelist = new SentencelistPostProcessor(
-				configname + ".sentences", 1,key);
+				configname + ".sentences", 1);
 
 		System.out.println("Starting Sphinx N-Gram");
 		SphinxRecognizer sphinxNGram = new SphinxRecognizer(configname
@@ -295,7 +295,7 @@ class Example {
 		// load sentencelist postprocessor
 		System.out.println("Starting Google+Sentencelist");
 		SentencelistPostProcessor sentencelist = new SentencelistPostProcessor(
-				configname + ".sentences", 1,key);
+				configname + ".sentences", 1);
 
 		Result r;
 		// load example chooser

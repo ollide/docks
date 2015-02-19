@@ -75,7 +75,7 @@ public class TestSupervisor {
 
 		RawGoogleRecognizer br = new RawGoogleRecognizer(key);
 		SentencelistPostProcessor lr = new SentencelistPostProcessor(
-				"speech_wtm_5words", 1,key);
+				"speech_wtm_5words", 1);
 		Result r;
 		ExampleChooser ec = new ExampleChooser("speech_wtm_5words");
 
@@ -1136,7 +1136,7 @@ public class TestSupervisor {
 		RawGoogleRecognizer bare = new RawGoogleRecognizer(key);
 
 		System.out.println("Starting LevenshteinRecognizer");
-		SentencelistPostProcessor lr = new SentencelistPostProcessor(sentenceFile, 1,key);
+		SentencelistPostProcessor lr = new SentencelistPostProcessor(sentenceFile, 1);
 		FileInputStream fstream = null;
 		try {
 			fstream = new FileInputStream(path + batchfile);
@@ -1234,7 +1234,7 @@ public class TestSupervisor {
 
 		System.out.println("Starting LevenshteinRecognizer");
 		SentencelistPostProcessor lr = new SentencelistPostProcessor(configname
-				+ ".sentences", 1,key);
+				+ ".sentences", 1);
 
 		System.out.println("Starting SimpleSphinxRecognizerNgram");
 		SphinxRecognizer sr_ngram = new SphinxRecognizer(configname
@@ -1590,7 +1590,7 @@ public class TestSupervisor {
 
 		System.out.println("Starting LevenshteinRecognizer");
 		SentencelistPostProcessor lr = new SentencelistPostProcessor(configname
-				+ ".sentences", 1,key);
+				+ ".sentences", 1);
 
 		System.out.println("Starting SimpleSphinxRecognizerNgram");
 		SphinxRecognizer sr_ngram = new SphinxRecognizer(configname
@@ -4467,7 +4467,7 @@ public class TestSupervisor {
 
 		System.out.println("Starting Google+Sentencelist");
 		SentencelistPostProcessor lr = new SentencelistPostProcessor(configname
-				+ ".sentences", 1,key);
+				+ ".sentences", 1);
 
 		System.out.println("Starting Sphinx N-Gram");
 		SphinxRecognizer sr_ngram = new SphinxRecognizer(configname
@@ -4717,7 +4717,7 @@ public class TestSupervisor {
 
 		System.out.println("Starting Google+Sentencelist");
 		SentencelistPostProcessor lr = new SentencelistPostProcessor(configname
-				+ ".sentences", 1,key);
+				+ ".sentences", 1);
 
 
 		System.out.println("Starting Google+Sphinx N-Gram");

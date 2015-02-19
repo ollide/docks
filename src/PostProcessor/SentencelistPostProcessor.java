@@ -24,15 +24,11 @@ package PostProcessor;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.sound.sampled.AudioInputStream;
-
 import Data.LevenshteinResult;
 import Data.Result;
 import Phoneme.PhonemeContainer;
 import Phoneme.PhonemeCreator;
 import PostProcessor.LevenshteinBased.Levenshtein;
-import Recognizer.RawGoogleRecognizer;
-import Recognizer.StandardRecognizer;
 import Utils.Printer;
 
 /**
@@ -40,10 +36,9 @@ import Utils.Printer;
  *
  * @author 7twiefel
  */
-public class SentencelistPostProcessor implements StandardRecognizer {
+public class SentencelistPostProcessor {
 
     private String TAG = "LevenshteinRecognizer";
-    private RawGoogleRecognizer br;
     private PhonemeCreator pc;
     private ArrayList<PhonemeContainer> phonemesGrammar;
     private Levenshtein ls;
@@ -59,15 +54,13 @@ public class SentencelistPostProcessor implements StandardRecognizer {
      * @param referenceRecognizer recognizer the result is postprocessed from
      * @param name                of the recognizer
      */
-    public SentencelistPostProcessor(String sentenceFile, int numberOfResults, int referenceRecognizer, String name, String key) {
-        this(sentenceFile, numberOfResults, key);
+    public SentencelistPostProcessor(String sentenceFile, int numberOfResults, int referenceRecognizer, String name) {
+        this(sentenceFile, numberOfResults);
         this.referenceRecognizer = referenceRecognizer;
         this.name = name;
     }
 
-
-    public SentencelistPostProcessor(String sentenceFile, int numberOfResults, String key) {
-        br = new RawGoogleRecognizer(key);
+    public SentencelistPostProcessor(String sentenceFile, int numberOfResults) {
         Printer.printWithTime(TAG, "loading phoneme database");
         pc = new PhonemeCreator(sentenceFile);
         Printer.printWithTime(TAG, "getting phonemes for speech result");
@@ -77,30 +70,6 @@ public class SentencelistPostProcessor implements StandardRecognizer {
         referenceRecognizer = -1;
         Printer.printWithTime(TAG, "SentencelistPostProcessor created");
     }
-
-
-    /**
-     * recognize from LocalMicrophone or SocketMicrophone directly (using Google ASR)
-     *
-     * @param ai LocalMicrophone or SocketMicrophone
-     * @return
-     */
-    public Result recognize(AudioInputStream ai) {
-
-        Result r = br.recognize(ai);
-        return recognizeFromResult(r);
-
-    }
-
-    /**
-     * recognize from audio file (16kHz, 1 channel, signed, little endian)
-     */
-    public Result recognizeFromFile(String fileName) {
-
-        Result r = br.recognizeFromFile(fileName);
-        return recognizeFromResult(r);
-    }
-
 
     /**
      * postprocess a result given by e.g. Google ASR
@@ -201,15 +170,11 @@ public class SentencelistPostProcessor implements StandardRecognizer {
 
     }
 
-    @Override
     public int getReferenceRecognizer() {
-        // TODO Auto-generated method stub
         return referenceRecognizer;
     }
 
-    @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return name;
     }
 
