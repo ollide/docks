@@ -1262,8 +1262,7 @@ public class TestSupervisor {
 				0, 0, 0);
 
 		System.out.println("Starting LexiconLookupRecognizer");
-		WordlistPostProcessor llr = new WordlistPostProcessor(configname
-				+ ".words",key);
+		WordlistPostProcessor llr = new WordlistPostProcessor(configname + ".words");
 
 		FileInputStream fstream = null;
 		try {
@@ -1622,8 +1621,7 @@ public class TestSupervisor {
 				0, 0, 0);
 
 		System.out.println("Starting LexiconLookupRecognizer");
-		WordlistPostProcessor llr = new WordlistPostProcessor(configname
-				+ ".words",key);
+		WordlistPostProcessor llr = new WordlistPostProcessor(configname + ".words");
 
 		FileInputStream fstream = null;
 		try {
@@ -2203,8 +2201,7 @@ public class TestSupervisor {
 				configname + ".punigram.xml", configname + ".words", 0, 0, 0);
 
 		System.out.println("Starting LexiconLookupRecognizer");
-		WordlistPostProcessor llr = new WordlistPostProcessor(configname
-				+ ".words",key);
+		WordlistPostProcessor llr = new WordlistPostProcessor(configname + ".words");
 
 		FileInputStream fstream = null;
 		try {
@@ -2953,8 +2950,7 @@ public class TestSupervisor {
 			e1.printStackTrace();
 		}
 
-		WordlistPostProcessor llr = new WordlistPostProcessor(
-				"heinrichLab.words",key);
+		WordlistPostProcessor llr = new WordlistPostProcessor("heinrichLab.words");
 
 		final NISTAlign alignerGoogle = new NISTAlign(true, true);
 		final NISTAlign alignerLLR = new NISTAlign(true, true);
@@ -4443,10 +4439,7 @@ public class TestSupervisor {
 				  out.write(line+"\n");
 				}
 				out.close();
-				
-				
-				
-				
+
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -4459,7 +4452,6 @@ public class TestSupervisor {
 	public static void semilive()
 	{
 		String configname = "wtm_experiment";
-		
 
 
 		System.out.println("Starting Raw Google");
@@ -4492,10 +4484,7 @@ public class TestSupervisor {
 				0, 0, 0);
 
 		System.out.println("Starting Google+Wordlist");
-		WordlistPostProcessor llr = new WordlistPostProcessor(configname
-				+ ".words",key);
-		
-		
+		WordlistPostProcessor llr = new WordlistPostProcessor(configname + ".words");
 
 		String filename = "back_fs_1387386033021_m1.wav";
 		String sentence = "there is a door in the back";
@@ -4735,8 +4724,7 @@ public class TestSupervisor {
 				0, 0, 0);
 
 		System.out.println("Starting Google+Wordlist");
-		WordlistPostProcessor llr = new WordlistPostProcessor(configname
-				+ ".words",key);
+		WordlistPostProcessor llr = new WordlistPostProcessor(configname + ".words");
 		Result r;
 		ExampleChooser ec = new ExampleChooser("speech_wtm_5words");
 

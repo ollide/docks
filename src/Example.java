@@ -239,8 +239,7 @@ class Example {
 				0, 0, 0);
 
 		System.out.println("Starting Google+Wordlist");
-		WordlistPostProcessor wordlist = new WordlistPostProcessor(configname
-				+ ".words",key);
+		WordlistPostProcessor wordlist = new WordlistPostProcessor(configname + ".words");
 
 		// a testfile
 		String filename = "data/back_fs_1387386033021_m1.wav";
