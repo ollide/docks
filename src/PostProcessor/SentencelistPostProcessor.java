@@ -36,7 +36,7 @@ import Utils.Printer;
  *
  * @author 7twiefel
  */
-public class SentencelistPostProcessor {
+public class SentencelistPostProcessor implements PostProcessor {
 
     private String TAG = "LevenshteinRecognizer";
     private PhonemeCreator pc;
@@ -76,6 +76,7 @@ public class SentencelistPostProcessor {
      *
      * @param r the result
      */
+    @Override
     @SuppressWarnings("unchecked")
     public Result recognizeFromResult(Result r) {
 
@@ -170,10 +171,12 @@ public class SentencelistPostProcessor {
 
     }
 
+    @Override
     public int getReferenceRecognizer() {
         return referenceRecognizer;
     }
 
+    @Override
     public String getName() {
         return name;
     }

@@ -31,7 +31,6 @@ import Data.Result;
 import Frontend.PhoneFrontEnd;
 import Phoneme.PhonemeContainer;
 import Phoneme.PhonemeCreator;
-import Recognizer.StandardRecognizer;
 import edu.cmu.sphinx.decoder.search.Token;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.util.props.ConfigurationManager;
@@ -41,7 +40,7 @@ import edu.cmu.sphinx.util.props.PropertyException;
  * based on sphinx example
  * modified by Johannes Twiefel
  */
-public class SphinxBasedPostProcessor implements StandardRecognizer {
+public class SphinxBasedPostProcessor implements PostProcessor {
 
     private ConfigurationManager cm;
     private Recognizer recognizer;
@@ -87,7 +86,6 @@ public class SphinxBasedPostProcessor implements StandardRecognizer {
         recognizer = (Recognizer) cm.lookup("recognizer");
         recognizer.allocate();
         pc = new PhonemeCreator(sentenceFile);
-
     }
 
     /**
@@ -109,6 +107,7 @@ public class SphinxBasedPostProcessor implements StandardRecognizer {
      *
      * @param r result of an ASR like Google ASR
      */
+    @Override
     public Result recognizeFromResult(Result r) {
         //get phonemes
         ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
@@ -168,24 +167,15 @@ public class SphinxBasedPostProcessor implements StandardRecognizer {
 
         }
         return r;
-
-    }
-
-    @Override
-    public Result recognizeFromFile(String fileName) {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override
     public int getReferenceRecognizer() {
-        // TODO Auto-generated method stub
         return referenceRecognizer;
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return name;
     }
 

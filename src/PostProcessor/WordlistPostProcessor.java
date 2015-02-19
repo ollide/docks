@@ -22,14 +22,13 @@
 package PostProcessor;
 
 import Data.Result;
-import Recognizer.StandardRecognizer;
 
 /**
  * word list postprocessor using a list of words to postprocess a result word by word
  *
  * @author 7twiefel
  */
-public class WordlistPostProcessor implements StandardRecognizer {
+public class WordlistPostProcessor implements PostProcessor {
 
     private SentencelistPostProcessor lr;
     private int referenceRecognizer;
@@ -65,6 +64,7 @@ public class WordlistPostProcessor implements StandardRecognizer {
      *
      * @param r the result
      */
+    @Override
     public Result recognizeFromResult(Result r) {
         //split the best result into words
         Result result = new Result();
@@ -87,20 +87,12 @@ public class WordlistPostProcessor implements StandardRecognizer {
     }
 
     @Override
-    public Result recognizeFromFile(String fileName) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
     public int getReferenceRecognizer() {
-        // TODO Auto-generated method stub
         return referenceRecognizer;
     }
 
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
         return name;
     }
 
