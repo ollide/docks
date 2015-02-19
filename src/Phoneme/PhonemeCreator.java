@@ -33,13 +33,13 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
+import java.util.List;
 import java.util.Scanner;
 
 import javax.xml.bind.JAXBException;
 
 import edu.cmu.sphinx.linguist.g2p.G2PConverter;
 import edu.cmu.sphinx.linguist.g2p.Path;
-
 
 import Data.Result;
 import Utils.Printer;
@@ -57,7 +57,7 @@ public class PhonemeCreator {
      */
     public PhonemeDB pdb;
 
-    private String TAG = "PhonemeCreator";
+    private static final String TAG = "PhonemeCreator";
     private static PhonemeCreator instance;
 
     /**
@@ -78,11 +78,21 @@ public class PhonemeCreator {
      * @return
      */
     public ArrayList<PhonemeContainer> getPhonemes(Result r) {
+        return getPhonemes(r.getResultList());
+    }
+
+    /**
+     * Creates a list of phonemes corresponding to the list of raw results.
+     *
+     * @param rawResults Result list received from a speech recognizer or postprocessor. needs to contain 1 entry as string as a minimum
+     * @return
+     */
+    public ArrayList<PhonemeContainer> getPhonemes(List<String> rawResults) {
         Printer.printWithTimeF(TAG, "getting Phonemes");
 
-        if (r == null) return null;
-
-        ArrayList<String> rawResults = r.getResultList();
+        if (rawResults == null) {
+            return null;
+        }
 
         ArrayList<PhonemeContainer> resultsWithPhonemes = new ArrayList<PhonemeContainer>();
         Printer.printWithTimeF(TAG, "created lists");
