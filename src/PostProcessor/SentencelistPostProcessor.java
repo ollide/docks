@@ -23,6 +23,7 @@ package PostProcessor;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import Data.LevenshteinResult;
 import Data.Result;
@@ -69,6 +70,14 @@ public class SentencelistPostProcessor implements PostProcessor {
         this.numberOfResults = numberOfResults;
         referenceRecognizer = -1;
         Printer.printWithTime(TAG, "SentencelistPostProcessor created");
+    }
+
+    public SentencelistPostProcessor(List<String> sentences, int numberOfResults) {
+        pc = PhonemeCreator.getInstance();
+        ls = new Levenshtein();
+        phonemesGrammar = pc.getPhonemes(sentences);
+        this.numberOfResults = numberOfResults;
+        referenceRecognizer = -1;
     }
 
     /**
