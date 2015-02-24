@@ -21,7 +21,6 @@
  */
 package de.unihamburg.informatik.wtm.docks.Phoneme;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,12 +30,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Scanner;
-
-import javax.xml.bind.JAXBException;
 
 import edu.cmu.sphinx.linguist.g2p.G2PConverter;
 import edu.cmu.sphinx.linguist.g2p.Path;
@@ -150,20 +148,13 @@ public class PhonemeCreator {
      * creates a new phoneme creator. used when no precached results of a list of sentences should be loaded
      */
     public PhonemeCreator() {
-        String sequiturSphinxModel = "g2p/sequitur/cmudict_sequitur.fst.ser";
-        String sequiturFSAModel = "g2p/sequitur/cmudict_sequitur.fsa.txt";
-        if (!(new File(sequiturSphinxModel)).exists())
-            try {
-                SequiturImport.importSequitur(sequiturFSAModel, sequiturSphinxModel);
-            } catch (JAXBException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        g2pDecoder = new G2PConverter(sequiturSphinxModel);
-
+        ClassLoader cl = this.getClass().getClassLoader();
+        URL sequiturSphinxModel = cl.getResource("g2p/sequitur/cmudict_sequitur.fst.ser");
+        try {
+            g2pDecoder = new G2PConverter(sequiturSphinxModel);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
