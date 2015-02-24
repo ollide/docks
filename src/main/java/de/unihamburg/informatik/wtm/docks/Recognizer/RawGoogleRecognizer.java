@@ -43,6 +43,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 
 import de.unihamburg.informatik.wtm.docks.Data.Result;
 import de.unihamburg.informatik.wtm.docks.Utils.Printer;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Recognizer used to connect to Google ASR
@@ -50,9 +51,9 @@ import de.unihamburg.informatik.wtm.docks.Utils.Printer;
  * @author Johannes Twiefel
  */
 public class RawGoogleRecognizer implements StandardRecognizer {
-    private static String TAG = "BaseRecognizer";
-    private String name = "Google";
 
+    private static final String TAG = "BaseRecognizer";
+    private static final String NAME = "Google";
 
     //get result from an open connection to Google
     private Result getResult(HttpURLConnection connection) {
@@ -285,13 +286,7 @@ public class RawGoogleRecognizer implements StandardRecognizer {
             e.printStackTrace();
         }
         Printer.printWithTime(TAG, "closing");
-
-        try {
-            stream.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        IOUtils.closeQuietly(stream);
 
         //disconnect from google
         con.disconnect();
@@ -347,13 +342,7 @@ public class RawGoogleRecognizer implements StandardRecognizer {
             e.printStackTrace();
         }
         Printer.printWithTime(TAG, "closing");
-
-        try {
-            stream.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        IOUtils.closeQuietly(stream);
 
         //disconnect from google
         con.disconnect();
@@ -377,7 +366,7 @@ public class RawGoogleRecognizer implements StandardRecognizer {
     @Override
     public String getName() {
         // TODO Auto-generated method stub
-        return name;
+        return NAME;
     }
 
     private String key;

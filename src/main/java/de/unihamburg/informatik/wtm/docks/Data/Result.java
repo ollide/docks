@@ -21,6 +21,8 @@
  */
 package de.unihamburg.informatik.wtm.docks.Data;
 
+import org.apache.commons.io.IOUtils;
+
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -72,7 +74,7 @@ public class Result implements Serializable {
     }
 
     /**
-     * @return phonemes of reference
+     * Sets phonemes of reference
      */
     public void setRefPhoneme(String refPhoneme) {
         this.refPhoneme = refPhoneme;
@@ -145,18 +147,21 @@ public class Result implements Serializable {
      * writes n-best list to a words.txt
      */
     public void writeToFile() {
+        FileWriter fstream = null;
+        BufferedWriter out = null;
         try {
             // Create file
-            FileWriter fstream = new FileWriter("words.txt");
-            BufferedWriter out = new BufferedWriter(fstream);
+            fstream = new FileWriter("words.txt");
+            out = new BufferedWriter(fstream);
             for (String s : resultList) {
                 out.write(s + "\n");
             }
 
-            // Close the output stream
-            out.close();
         } catch (Exception e) {// Catch exception if any
             System.err.println("Error: " + e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(fstream);
+            IOUtils.closeQuietly(out);
         }
     }
 
@@ -167,20 +172,17 @@ public class Result implements Serializable {
      */
     public void save(String file) {
         OutputStream fos = null;
-
+        ObjectOutputStream o = null;
         try {
-
             fos = new FileOutputStream(file);
-            ObjectOutputStream o = new ObjectOutputStream(fos);
+            o = new ObjectOutputStream(fos);
             o.writeObject(this);
 
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
         } finally {
-            try {
-                fos.close();
-            } catch (Exception e) {
-            }
+            IOUtils.closeQuietly(fos);
+            IOUtils.closeQuietly(o);
         }
     }
 
@@ -192,22 +194,20 @@ public class Result implements Serializable {
      */
     public static Result load(String file) {
         InputStream fis = null;
+        ObjectInputStream o = null;
         Result r = null;
 
         try {
-
             fis = new FileInputStream(file);
-            ObjectInputStream o = new ObjectInputStream(fis);
+            o = new ObjectInputStream(fis);
             r = (Result) o.readObject();
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
         } finally {
-            try {
-                fis.close();
-            } catch (Exception e) {
-            }
+            IOUtils.closeQuietly(fis);
+            IOUtils.closeQuietly(o);
         }
 
         return r;

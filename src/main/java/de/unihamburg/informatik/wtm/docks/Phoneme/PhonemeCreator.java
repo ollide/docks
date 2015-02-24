@@ -41,6 +41,7 @@ import edu.cmu.sphinx.linguist.g2p.Path;
 
 import de.unihamburg.informatik.wtm.docks.Data.Result;
 import de.unihamburg.informatik.wtm.docks.Utils.Printer;
+import org.apache.commons.io.IOUtils;
 
 /**
  * class used to convert graphemes to phonemes.
@@ -175,18 +176,20 @@ public class PhonemeCreator {
     public PhonemeCreator(String sentenceFile) {
         this();
         InputStream fis = null;
+        ObjectInputStream o1 = null;
+        ObjectInputStream o2 = null;
 
         try {
 
             //try to read the cached phonemes
             fis = new FileInputStream(sentenceFile + ".ser");
-            ObjectInputStream o = new ObjectInputStream(fis);
+            o1 = new ObjectInputStream(fis);
 
             pdb = new PhonemeDB();
-            pdb = (PhonemeDB) o.readObject();
+            pdb = (PhonemeDB) o1.readObject();
 
         } catch (IOException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
 
             //if no cached phonemes are available cache ones
             fillDatabase(sentenceFile);
@@ -194,39 +197,34 @@ public class PhonemeCreator {
             //try to read the cached phonemes again
             try {
                 fis = new FileInputStream(sentenceFile + ".ser");
-                ObjectInputStream o = new ObjectInputStream(fis);
+                o2 = new ObjectInputStream(fis);
 
                 pdb = new PhonemeDB();
-                pdb = (PhonemeDB) o.readObject();
+                pdb = (PhonemeDB) o2.readObject();
 
             } catch (FileNotFoundException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             } catch (IOException e2) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (ClassNotFoundException e3) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
 
         } catch (ClassNotFoundException e) {
-            System.err.println(e);
+            System.err.println(e.getMessage());
 
         } finally {
-            try {
-                fis.close();
-                System.out.println("Loaded " + sentenceFile
-                        + ".ser successfully");
-
-            } catch (Exception e) {
-            }
+            IOUtils.closeQuietly(fis);
+            IOUtils.closeQuietly(o1);
+            IOUtils.closeQuietly(o2);
+            System.out.println("Loaded " + sentenceFile
+                    + ".ser successfully");
         }
     }
 
     private void fillDatabase(String sentenceFile) {
 
-        Scanner in;
+        Scanner in = null;
         try {
             //reads sentence file
             in = new Scanner(new FileReader(sentenceFile + ".txt"));
@@ -270,27 +268,25 @@ public class PhonemeCreator {
             }
 
             OutputStream fos = null;
+            ObjectOutputStream o = null;
 
             //serialize the database
             try {
-
-                fos = new FileOutputStream(sentenceFile
-                        + ".ser");
-                ObjectOutputStream o = new ObjectOutputStream(fos);
+                fos = new FileOutputStream(sentenceFile + ".ser");
+                o = new ObjectOutputStream(fos);
                 o.writeObject(pdb);
 
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println(e.getMessage());
             } finally {
-                try {
-                    fos.close();
-                } catch (Exception e) {
-                }
+                IOUtils.closeQuietly(fos);
+                IOUtils.closeQuietly(o);
             }
 
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
+        } finally {
+            IOUtils.closeQuietly(in);
         }
 
     }
