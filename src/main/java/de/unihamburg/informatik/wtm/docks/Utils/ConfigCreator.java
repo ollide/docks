@@ -484,7 +484,7 @@ public class ConfigCreator {
 	
 	//create a dictionary from a list of words
 	private static void wordListToDictionary(String basepath,String wordList, String dicfile) {
-		PhonemeCreator pc = PhonemeCreator.getInstance(wordList);
+		PhonemeCreator pc =  new PhonemeCreator(wordList);
 
 		HashSet<String> words = new HashSet<String>();
 		FileInputStream fstream = null;

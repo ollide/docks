@@ -277,7 +277,7 @@ public class TestSupervisor {
 		}
 
 
-		PhonemeCreator pc = PhonemeCreator.getInstance("speech_wtm_5words");
+		PhonemeCreator pc = new PhonemeCreator("speech_wtm_5words");
 		Levenshtein ls = new Levenshtein();
 		try {
 			boolean correct;
@@ -988,8 +988,7 @@ public class TestSupervisor {
 		new FileProcessor(
 				"/informatik/isr/wtm/TEMP/7twiefel/110302_MuliDecoderAsr/Raw/heinrichLab.google.refhyp",
 				new FileLoop() {
-					PhonemeCreator pc = PhonemeCreator
-							.getInstance("heinrichLab.google.refhyp");
+					PhonemeCreator pc = new PhonemeCreator("heinrichLab.google.refhyp");
 					final NISTAlign alignerPhonemes = new NISTAlign(true, true);
 					final NISTAlign alignerPhonemesReverse = new NISTAlign(
 							true, true);
@@ -3558,7 +3557,7 @@ public class TestSupervisor {
 		String hyp = "this is a red ball";
 
 
-		PhonemeCreator pc = new PhonemeCreator();
+		PhonemeCreator pc = PhonemeCreator.getInstance();
 		Result r = new Result();
 		r.addResult(ref);
 		r.addResult(hyp);

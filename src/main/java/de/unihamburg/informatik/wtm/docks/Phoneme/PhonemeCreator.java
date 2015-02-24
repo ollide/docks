@@ -60,17 +60,6 @@ public class PhonemeCreator {
     private static PhonemeCreator instance;
 
     /**
-     * @param sentenceFile a list of sentences stored in a file (filename)
-     * @return an instance of phoneme creator
-     */
-    public synchronized static PhonemeCreator getInstance(String sentenceFile) {
-        if (instance == null) {
-            instance = new PhonemeCreator(sentenceFile);
-        }
-        return instance;
-    }
-
-    /**
      * creates a list of phonemes corresponding to the list of results contained in r
      *
      * @param r Result received from a speech recognizer or postprocessor. needs to contain 1 result as string as a minimum
@@ -122,7 +111,6 @@ public class PhonemeCreator {
                 ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
                 //System.out.println("Sphinx G2P");
 
-
                 for (Path p : paths) {
                     //System.out.println(p.getPath());
 
@@ -148,7 +136,7 @@ public class PhonemeCreator {
     /**
      * creates a new phoneme creator. used when no precached results of a list of sentences should be loaded
      */
-    public PhonemeCreator() {
+    private PhonemeCreator() {
         ClassLoader cl = this.getClass().getClassLoader();
         URL sequiturSphinxModel = cl.getResource("g2p/sequitur/cmudict_sequitur.fst.ser");
         try {
@@ -180,7 +168,6 @@ public class PhonemeCreator {
         ObjectInputStream o2 = null;
 
         try {
-
             //try to read the cached phonemes
             fis = new FileInputStream(sentenceFile + ".ser");
             o1 = new ObjectInputStream(fis);
@@ -217,8 +204,7 @@ public class PhonemeCreator {
             IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(o1);
             IOUtils.closeQuietly(o2);
-            System.out.println("Loaded " + sentenceFile
-                    + ".ser successfully");
+            System.out.println("Loaded " + sentenceFile + ".ser successfully");
         }
     }
 
@@ -231,12 +217,12 @@ public class PhonemeCreator {
             in.useDelimiter("\n");
 
             Result r = new Result();
-            String temp = "";
+            String temp;
 
             //separate words and add the to the input arg
             while (in.hasNext()) {
                 temp = in.next();
-                if (temp.indexOf("\r") != -1) {
+                if (temp.contains("\r")) {
                     temp = temp.substring(0, temp.length() - 1);
                 } else temp = temp.substring(0, temp.length());
 
