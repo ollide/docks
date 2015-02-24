@@ -31,71 +31,70 @@ import edu.cmu.sphinx.util.props.PropertyException;
  * Sphinx-4. This application uses the Sphinx-4 endpointer, which automatically
  * segments incoming audio into utterances and silences.
  */
-public class SphinxRecognizer  implements StandardRecognizer{
-	private String name = "SimpleSphinxRecognizer";
-	private Recognizer recognizer;
-	@SuppressWarnings("unused")
-	private Microphone microphone;
-	private ConfigurationManager cm;
-	private AudioFileDataSource dataSource;
-	/**
-	 * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
-	 * @param configName name of config
-	 * @param name name of recognizer
-	 */
-	public SphinxRecognizer(String configName, String name)
-	{
-		this(configName);
-		this.name=name;
-	}
-	/**
-	 * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
-	 * @param configName name of config
-	 */
-	public SphinxRecognizer(String configName)
-	{
-		//get config and initialize
-		try {
-			cm = new ConfigurationManager(new File(	configName).toURI().toURL());
-		} catch (PropertyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		recognizer = (Recognizer) cm.lookup("recognizer");
-		recognizer.allocate();
-		microphone = (Microphone) cm.lookup("microphone");
-		dataSource = (AudioFileDataSource) cm.lookup("audioFileDataSource");
-	}
-	/**
-	 * 
-	 * @return Language Weight
-	 */
-	public float getLanguageWeight()
-	{
-		return Float.parseFloat(cm.getGlobalProperty("languageWeight"));
-	}
-	/**
-	 * 
-	 * @return Word Insertion Probability
-	 */
-	public float getWIP()
-	{
-		return Float.parseFloat(cm.getGlobalProperty("wordInsertionProbability"));
-	}
-	
+public class SphinxRecognizer implements StandardRecognizer {
+    private String name = "SimpleSphinxRecognizer";
+    private Recognizer recognizer;
+    @SuppressWarnings("unused")
+    private Microphone microphone;
+    private ConfigurationManager cm;
+    private AudioFileDataSource dataSource;
 
-	public Result recognizeFromFile(String fileName)
-    {
-        URL audioURL=null;
-		try {
-			audioURL = new File(fileName).toURI().toURL();
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+    /**
+     * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
+     *
+     * @param configName name of config
+     * @param name       name of recognizer
+     */
+    public SphinxRecognizer(String configName, String name) {
+        this(configName);
+        this.name = name;
+    }
+
+    /**
+     * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
+     *
+     * @param configName name of config
+     */
+    public SphinxRecognizer(String configName) {
+        //get config and initialize
+        try {
+            cm = new ConfigurationManager(new File(configName).toURI().toURL());
+        } catch (PropertyException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        recognizer = (Recognizer) cm.lookup("recognizer");
+        recognizer.allocate();
+        microphone = (Microphone) cm.lookup("microphone");
+        dataSource = (AudioFileDataSource) cm.lookup("audioFileDataSource");
+    }
+
+    /**
+     * @return Language Weight
+     */
+    public float getLanguageWeight() {
+        return Float.parseFloat(cm.getGlobalProperty("languageWeight"));
+    }
+
+    /**
+     * @return Word Insertion Probability
+     */
+    public float getWIP() {
+        return Float.parseFloat(cm.getGlobalProperty("wordInsertionProbability"));
+    }
+
+
+    public Result recognizeFromFile(String fileName) {
+        URL audioURL = null;
+        try {
+            audioURL = new File(fileName).toURI().toURL();
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
 
         // configure the audio input for the recognizer
         dataSource.setAudioFile(audioURL, null);
@@ -103,46 +102,46 @@ public class SphinxRecognizer  implements StandardRecognizer{
         // Loop until last utterance in the audio file has been decoded, in which case the recognizer will return null.
         Result r = null;
         edu.cmu.sphinx.result.Result result;
-        while ((result = recognizer.recognize())!= null) {
-        		if(r == null)
-        			r = new Result();
-        		//get best result and add to 10-best list
-                String resultText = result.getBestFinalResultNoFiller();
-                if(resultText.equals(""))
-                	return null;
+        while ((result = recognizer.recognize()) != null) {
+            if (r == null)
+                r = new Result();
+            //get best result and add to 10-best list
+            String resultText = result.getBestFinalResultNoFiller();
+            if (resultText.equals(""))
+                return null;
 
-                r.addResult(resultText);
+            r.addResult(resultText);
 
-                //get rest 9 results and add to 10-best list
-                int i = 0;
-                for(Token t: result.getResultTokens())
-                {
-                	
-                	if(i>=9)
-                		break;
-                	r.addResult(t.getWordPathNoFiller());
-                	i++;
-                }
-                //
+            //get rest 9 results and add to 10-best list
+            int i = 0;
+            for (Token t : result.getResultTokens()) {
+
+                if (i >= 9)
+                    break;
+                r.addResult(t.getWordPathNoFiller());
+                i++;
+            }
+            //
         }
         return r;
     }
 
 
-	@Override
-	public Result recognizeFromResult(Result r) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Result recognizeFromResult(Result r) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public int getReferenceRecognizer() {
-		// TODO Auto-generated method stub
-		return -1;
-	}
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return name;
-	}
+    @Override
+    public int getReferenceRecognizer() {
+        // TODO Auto-generated method stub
+        return -1;
+    }
+
+    @Override
+    public String getName() {
+        // TODO Auto-generated method stub
+        return name;
+    }
 }
