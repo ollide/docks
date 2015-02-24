@@ -26,10 +26,16 @@ import org.apache.commons.cli.*;
 public class DocksMain {
 
     private static final String OPTION_HELP = "help";
+    private static final String OPTION_SOCKET = "socket";
 
     public static void main(String[] args) {
         Options options = new Options();
         options.addOption(OPTION_HELP, false, "print this message");
+
+        Option optionSocket = OptionBuilder
+                .withDescription("start socket post processor (default port: " + SocketPostProcessor.PORT + ")")
+                .hasOptionalArgs(1).withArgName("port").create(OPTION_SOCKET);
+        options.addOption(optionSocket);
 
         CommandLineParser parser = new BasicParser();
         try {
@@ -41,6 +47,10 @@ public class DocksMain {
 
             if (cmd.hasOption(OPTION_HELP)) {
                 printHelp(options);
+            }
+
+            if (cmd.hasOption(OPTION_SOCKET)) {
+                SocketPostProcessor.main(cmd.getOptionValues(OPTION_SOCKET));
             }
 
         } catch (ParseException e) {
