@@ -21,8 +21,8 @@
  */
 package de.unihamburg.informatik.wtm.docks;
 
-import de.unihamburg.informatik.wtm.docks.Data.Result;
-import de.unihamburg.informatik.wtm.docks.PostProcessor.SentencelistPostProcessor;
+import de.unihamburg.informatik.wtm.docks.data2.Result;
+import de.unihamburg.informatik.wtm.docks.postprocessor2.SentencelistPostProcessor;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
