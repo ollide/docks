@@ -22,6 +22,8 @@
 package de.unihamburg.informatik.wtm.docks.data;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
@@ -46,6 +48,8 @@ import java.util.List;
 public class Result implements Serializable {
 
     private static final long serialVersionUID = 1650789290776731090L;
+
+    private static final Logger LOG = LoggerFactory.getLogger(Result.class);
 
     private List<String> resultList = new ArrayList<String>();
     private float confidence;
@@ -126,22 +130,18 @@ public class Result implements Serializable {
     }
 
     /**
-     * prints out n-best list
+     * @return printable representation
      */
-    public void print() {
-        System.out.println("");
-        System.out.println("= = = = = = = = =");
-        System.out.println("Results");
-        System.out.println("");
-        System.out.println("Confidence: " + confidence);
-        System.out.println("");
-        System.out.println("N-Best List: ");
-        System.out.println("");
+    public String print() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("= = = = = = = = =\nResults\nConfidence: ");
+        sb.append(confidence);
+        sb.append("\nN-Best List:\n");
         for (String s : resultList) {
-            System.out.println(s);
+            sb.append(s);
         }
-        System.out.println("= = = = = = = = =");
-        System.out.println("");
+        sb.append("= = = = = = = = =");
+        return sb.toString();
     }
 
     /**
@@ -158,8 +158,8 @@ public class Result implements Serializable {
                 out.write(s + "\n");
             }
 
-        } catch (Exception e) {// Catch exception if any
-            System.err.println("Error: " + e.getMessage());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
         } finally {
             IOUtils.closeQuietly(fstream);
             IOUtils.closeQuietly(out);
@@ -180,7 +180,7 @@ public class Result implements Serializable {
             o.writeObject(this);
 
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOG.error(e.getMessage());
         } finally {
             IOUtils.closeQuietly(fos);
             IOUtils.closeQuietly(o);
@@ -203,9 +203,9 @@ public class Result implements Serializable {
             o = new ObjectInputStream(fis);
             r = (Result) o.readObject();
         } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOG.error(e.getMessage());
         } catch (ClassNotFoundException e) {
-            System.err.println(e.getMessage());
+            LOG.error(e.getMessage());
         } finally {
             IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(o);
