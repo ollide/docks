@@ -46,7 +46,9 @@ import de.unihamburg.informatik.wtm.docks.recognizer.RawGoogleRecognizer;
 import de.unihamburg.informatik.wtm.docks.recognizer.SphinxRecognizer;
 
 import de.unihamburg.informatik.wtm.docks.utils.ExampleChooser;
-import de.unihamburg.informatik.wtm.docks.utils.Printer;
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -55,6 +57,8 @@ import de.unihamburg.informatik.wtm.docks.utils.Printer;
  * @author 7twiefel
  */
 class Example {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Example.class);
 
     // utility to test recognizers and postprocessors on an example audio file
     private static void testFile(String filename, String sentence,
@@ -69,11 +73,11 @@ class Example {
         // clean the sentences from special chars
         sentence = sentence.replaceAll("[^a-zA-Z 0-9;]", "");
         sentence = sentence.replaceAll(" +", " ");
-        if (!sentence.equals(""))
-            if (sentence.charAt(0) == ' ')
-                sentence = sentence.substring(1);
+        if (!sentence.equals("") && sentence.charAt(0) == ' ') {
+            sentence = sentence.substring(1);
+        }
 
-        Printer.printColor(Printer.ANSI_CYAN, sentence);
+        LOG.info(sentence);
 
         // containers for results
         String hypRawGoogle;
@@ -88,52 +92,54 @@ class Example {
         if (r != null) {
             // print out result
             hypRawGoogle = r.getBestResult();
-            System.out.println("Raw Google: " + hypRawGoogle);
+            LOG.info("Raw Google: {}", hypRawGoogle);
 
             // recognize from google result
             r = sentencelist.recognizeFromResult(r);
-            if (r != null)
+            if (r != null) {
                 hypSentenceList = r.getBestResult();
-            System.out.println("Google+Sentencelist: " + hypSentenceList);
+            }
+            LOG.info("Google+Sentencelist: {}", hypSentenceList);
 
             // refill result
             r = new Result();
             r.addResult(hypRawGoogle);
 
             r = wordlist.recognizeFromResult(r);
-            if (r != null)
+            if (r != null) {
                 hypWordList = r.getBestResult();
-            System.out.println("Google+Wordlist: " + hypWordList);
+            }
+            LOG.info("Google+Wordlist: {}", hypWordList);
 
             // refill result
             r = new Result();
             r.addResult(hypRawGoogle);
             // recognize from google result
             r = sphinxBasedPostProcessorBigram.recognizeFromResult(r);
-            if (r != null)
+            if (r != null) {
                 hypSphinxPostProcessorBigram = r.getBestResult();
-            System.out.println("Google+Sphinx N-Gram: "
-                    + hypSphinxPostProcessorBigram);
+            }
+            LOG.info("Google+Sphinx N-Gram: {}", hypSphinxPostProcessorBigram);
 
             // refill result
             r = new Result();
             r.addResult(hypRawGoogle);
             // recognize from google result
             r = sphinxBasedPostProcessorUnigram.recognizeFromResult(r);
-            if (r != null)
+            if (r != null) {
                 hypSphinxPostProcessorUnigram = r.getBestResult();
-            System.out.println("Google+Sphinx Unigram: "
-                    + hypSphinxPostProcessorUnigram);
+            }
+            LOG.info("Google+Sphinx Unigram: {}", hypSphinxPostProcessorUnigram);
 
             // refill result
             r = new Result();
             r.addResult(hypRawGoogle);
             // recognize from google result
             r = sphinxBasedPostProcessorSentences.recognizeFromResult(r);
-            if (r != null)
+            if (r != null) {
                 hypSphinxPostProcessorSentences = r.getBestResult();
-            System.out.println("Google+Sphinx Sentences: "
-                    + hypSphinxPostProcessorSentences);
+            }
+            LOG.info("Google+Sphinx Sentences: {}", hypSphinxPostProcessorSentences);
 
         }
         // recognize from file
@@ -141,57 +147,45 @@ class Example {
         String result = "";
         if (r != null) {
             result = r.getBestResult();
-
         }
-        System.out.println("Sphinx Sentences: " + result);
+        LOG.info("Sphinx Sentences: {}", result);
 
         // recognize from file
         r = sphinxNGram.recognizeFromFile(filename);
         result = "";
         if (r != null) {
             result = r.getBestResult();
-
         }
-        System.out.println("Sphinx N-Gram: " + result);
+        LOG.info("Sphinx N-Gram: {}", result);
     }
 
     // utility to play audio
     private static void playSound(String filename) {
         File file = new File(filename);
         try {
-
-            Clip clip = AudioSystem.getClip();
-            AudioInputStream inputStream = AudioSystem
-                    .getAudioInputStream(file);
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(file);
 
             AudioFormat format = inputStream.getFormat();
             DataLine.Info info = new DataLine.Info(Clip.class, format);
 
-            clip = (Clip) AudioSystem.getLine(info);
+            Clip clip = (Clip) AudioSystem.getLine(info);
 
             clip.open(inputStream);
             clip.start();
 
         } catch (UnsupportedAudioFileException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("audio file {} is not supported: {}", filename, e.getMessage());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOG.error("opening audio file {} failed: {}", filename, e.getMessage());
+        } catch (LineUnavailableException e) {
+            LOG.error("requested audio line unavailable: {}", e.getMessage());
         }
-        // Get a sound clip resource.
-        catch (LineUnavailableException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
     }
 
     // interrupt till enter is pressed
     private static void waitForEnter() {
         Console c = System.console();
         if (c != null) {
-
             c.format("\nPress ENTER to proceed.\n");
             c.readLine();
         }
@@ -206,35 +200,34 @@ class Example {
         String configname = "config/elpmaxe/elpmaxe";
 
         // initialize some recognizers
-        System.out.println("Starting Raw Google");
+        LOG.info("Starting Raw Google");
         RawGoogleRecognizer rawGoogle = new RawGoogleRecognizer(key);
 
-        System.out.println("Starting Google+Sentencelist");
+        LOG.info("Starting Google+Sentencelist");
         SentencelistPostProcessor sentencelist = new SentencelistPostProcessor(
                 configname + ".sentences", 1);
 
-        System.out.println("Starting Sphinx N-Gram");
+        LOG.info("Starting Sphinx N-Gram");
         SphinxRecognizer sphinxNGram = new SphinxRecognizer(configname
                 + ".ngram.xml");
 
-        System.out.println("Starting Sphinx Sentences");
+        LOG.info("Starting Sphinx Sentences");
         SphinxRecognizer sphinxSentences = new SphinxRecognizer(configname
                 + ".fsgsentences.xml");
 
-        System.out.println("Starting Google+Sphinx N-Gram");
+        LOG.info("Starting Google+Sphinx N-Gram");
         final SphinxBasedPostProcessor sphinxPostProcessorBigram = new SphinxBasedPostProcessor(
                 configname + ".pngram.xml", configname + ".words", 0, 0, 0);
 
-        System.out.println("Starting Google+Sphinx Unigram");
+        LOG.info("Starting Google+Sphinx Unigram");
         final SphinxBasedPostProcessor sphinxPostProcessorUnigram = new SphinxBasedPostProcessor(
                 configname + ".punigram.xml", configname + ".words", 0, 0, 0);
 
-        System.out.println("Starting Google+Sphinx Sentences");
+        LOG.info("Starting Google+Sphinx Sentences");
         final SphinxBasedPostProcessor sphinxPostProcessorSentences = new SphinxBasedPostProcessor(
-                configname + ".pgrammarsentences.xml", configname + ".words",
-                0, 0, 0);
+                configname + ".pgrammarsentences.xml", configname + ".words", 0, 0, 0);
 
-        System.out.println("Starting Google+Wordlist");
+        LOG.info("Starting Google+Wordlist");
         WordlistPostProcessor wordlist = new WordlistPostProcessor(configname + ".words");
 
         // a testfile
@@ -283,11 +276,11 @@ class Example {
         String configname = "config/elpmaxe/elpmaxe";
 
         // load google
-        System.out.println("Starting Raw Google");
+        LOG.info("Starting Raw Google");
         RawGoogleRecognizer rawGoogle = new RawGoogleRecognizer(key);
 
         // load sentencelist postprocessor
-        System.out.println("Starting Google+Sentencelist");
+        LOG.info("Starting Google+Sentencelist");
         SentencelistPostProcessor sentencelist = new SentencelistPostProcessor(
                 configname + ".sentences", 1);
 
@@ -312,24 +305,22 @@ class Example {
             if (r != null) {
                 // get google result
                 rawGoogleResult = r.getBestResult();
-                System.out.println("Raw Google: " + rawGoogleResult);
+                LOG.info("Raw Google: {}", rawGoogleResult);
 
                 // postprocess with sentencelist
                 r = sentencelist.recognizeFromResult(r);
 
                 // get result
-                if (r != null)
+                if (r != null) {
                     sentenceListResult = r.getBestResult();
-                System.out
-                        .println("Google+Sentencelist: " + sentenceListResult);
-
+                }
+                LOG.info("Google+Sentencelist: {}", sentenceListResult);
             }
         }
     }
 
     public static void main(String[] args) {
-        // set verbose to false
-        Printer.verbose = false;
+        BasicConfigurator.configure();
 
         //uncomment this to create a new configuration from a batch file
         //ConfigCreator.createConfig("elpmaxe", "./batch");
