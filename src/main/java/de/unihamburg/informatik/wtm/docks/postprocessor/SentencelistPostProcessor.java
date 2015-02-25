@@ -86,9 +86,8 @@ public class SentencelistPostProcessor implements PostProcessor {
     @SuppressWarnings("unchecked")
     public Result recognizeFromResult(Result r) {
 
-        //get phonemes for r
+        // get phonemes for r
         ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
-
 
         if (phonemesSpeech != null) {
             Printer.printWithTime(TAG, "calculating levenshtein distances");
@@ -144,7 +143,6 @@ public class SentencelistPostProcessor implements PostProcessor {
                 }
 
             }
-
             Printer.printWithTimeF(TAG, "levenshtein distances calculated");
 
         }
@@ -160,21 +158,23 @@ public class SentencelistPostProcessor implements PostProcessor {
      */
     public double[] calculateAgainstArray(String input, String[] array) {
         double[] res = new double[array.length];
+
         Result r = new Result();
         r.addResult(input);
-        for (String s : array)
+        for (String s : array) {
             r.addResult(s);
-        //get phonemes
+        }
+        // get phonemes
         ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
-        //calculate distances
-        for (int i = 1; i < phonemesSpeech.size(); i++) {
-            int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
-                    phonemesSpeech.get(0).getPhonemes());
-            res[i - 1] = diff;
 
+        final String[] inputPhonemes = phonemesSpeech.get(0).getPhonemes();
+
+        // calculate distances
+        for (int i = 1; i < phonemesSpeech.size(); i++) {
+            int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(), inputPhonemes);
+            res[i - 1] = diff;
         }
         return res;
-
     }
 
     @Override
