@@ -24,6 +24,8 @@ package de.unihamburg.informatik.wtm.docks;
 import de.unihamburg.informatik.wtm.docks.Data.Result;
 import de.unihamburg.informatik.wtm.docks.PostProcessor.SentencelistPostProcessor;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -35,13 +37,15 @@ public class SocketPostProcessor {
 
     public static final int PORT = 54015;
 
+    private static final Logger LOG = LoggerFactory.getLogger(SocketPostProcessor.class);
+
     public static void main(String[] args) {
         int port = PORT;
         if (args != null && args.length > 0) {
             try {
                 port = Integer.parseInt(args[0]);
             } catch (NumberFormatException nfe) {
-                System.out.println("invalid socket port, falling back to default.");
+                LOG.warn("invalid socket port, falling back to default ({}).", PORT);
             }
         }
 
@@ -50,16 +54,16 @@ public class SocketPostProcessor {
         BufferedReader in = null;
         PrintWriter out = null;
         try {
-            System.out.println("starting server socket on port " + port);
+            LOG.info("starting server socket on port {}", port);
             listener = new ServerSocket(port);
             while (true) {
-                System.out.println("waiting for socket connection");
+                LOG.debug("waiting for socket connection");
                 socket = listener.accept();
                 in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 out = new PrintWriter(socket.getOutputStream(), true);
 
                 String requestString = in.readLine();
-                System.out.println("request: " + requestString);
+                LOG.debug("request: {}", requestString);
 
                 List<String> expectedResults = parseExpectedSentences(requestString);
                 Result googleResult = parseGoogleResult(requestString);
@@ -68,11 +72,11 @@ public class SocketPostProcessor {
                 Result r = sp.recognizeFromResult(googleResult);
 
                 String bestResult = r.getBestResult();
-                System.out.println("returning best result: " + bestResult);
+                LOG.debug("returning best result: {}", bestResult);
                 out.println(bestResult);
             }
         } catch (Exception e) {
-            System.out.println("error: " + e.getMessage());
+            LOG.error("error: ", e.getMessage());
         } finally {
             IOUtils.closeQuietly(listener);
             IOUtils.closeQuietly(socket);
