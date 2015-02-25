@@ -31,7 +31,7 @@ public class DocksMain {
     private static final String OPTION_HELP = "help";
     private static final String OPTION_SOCKET = "socket";
 
-    private static final Logger log = LoggerFactory.getLogger(DocksMain.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocksMain.class);
 
     public static void main(String[] args) {
         BasicConfigurator.configure();
@@ -61,7 +61,7 @@ public class DocksMain {
             }
 
         } catch (ParseException e) {
-            log.error("Parsing failed. Reason: {}", e.getMessage());
+            LOG.error("Parsing failed. Reason: {}", e.getMessage());
         }
     }
 
