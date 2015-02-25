@@ -33,20 +33,20 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import de.unihamburg.informatik.wtm.docks.data2.Result;
+import de.unihamburg.informatik.wtm.docks.data.Result;
 
-import de.unihamburg.informatik.wtm.docks.frontend2.LocalMicrophone;
-import de.unihamburg.informatik.wtm.docks.frontend2.VoiceActivityDetector;
+import de.unihamburg.informatik.wtm.docks.frontend.LocalMicrophone;
+import de.unihamburg.informatik.wtm.docks.frontend.VoiceActivityDetector;
 
-import de.unihamburg.informatik.wtm.docks.postprocessor2.SentencelistPostProcessor;
-import de.unihamburg.informatik.wtm.docks.postprocessor2.SphinxBasedPostProcessor;
-import de.unihamburg.informatik.wtm.docks.postprocessor2.WordlistPostProcessor;
+import de.unihamburg.informatik.wtm.docks.postprocessor.SentencelistPostProcessor;
+import de.unihamburg.informatik.wtm.docks.postprocessor.SphinxBasedPostProcessor;
+import de.unihamburg.informatik.wtm.docks.postprocessor.WordlistPostProcessor;
 
-import de.unihamburg.informatik.wtm.docks.recognizer2.RawGoogleRecognizer;
-import de.unihamburg.informatik.wtm.docks.recognizer2.SphinxRecognizer;
+import de.unihamburg.informatik.wtm.docks.recognizer.RawGoogleRecognizer;
+import de.unihamburg.informatik.wtm.docks.recognizer.SphinxRecognizer;
 
-import de.unihamburg.informatik.wtm.docks.utils2.ExampleChooser;
-import de.unihamburg.informatik.wtm.docks.utils2.Printer;
+import de.unihamburg.informatik.wtm.docks.utils.ExampleChooser;
+import de.unihamburg.informatik.wtm.docks.utils.Printer;
 
 
 /**
