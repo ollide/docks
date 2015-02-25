@@ -65,6 +65,10 @@ public class DocksMain {
         }
     }
 
+    private DocksMain() {
+        // prevent instantiation
+    }
+
     private static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("docks", options);
