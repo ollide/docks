@@ -34,6 +34,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Stores a result of speech recognition.
@@ -46,7 +47,7 @@ public class Result implements Serializable {
 
     private static final long serialVersionUID = 1650789290776731090L;
 
-    private ArrayList<String> resultList = new ArrayList<String>();
+    private List<String> resultList = new ArrayList<String>();
     private float confidence;
 
     private String hypPhoneme;
@@ -83,14 +84,14 @@ public class Result implements Serializable {
     /**
      * @return n-best list
      */
-    public ArrayList<String> getResultList() {
+    public List<String> getResultList() {
         return resultList;
     }
 
     /**
      * @param resultList sets n-best list
      */
-    public void setResultList(ArrayList<String> resultList) {
+    public void setResultList(List<String> resultList) {
         this.resultList = resultList;
     }
 
