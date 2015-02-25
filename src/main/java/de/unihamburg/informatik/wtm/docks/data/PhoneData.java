@@ -21,7 +21,6 @@
  */
 package de.unihamburg.informatik.wtm.docks.data;
 
-
 import de.unihamburg.informatik.wtm.docks.phoneme.PhonemeSubstitution;
 
 import edu.cmu.sphinx.frontend.Data;
@@ -45,13 +44,11 @@ public class PhoneData implements Data {
     /**
      * @param phoneID the phoneme representation
      * @param method  the phoneme substitution method
-     * @see Phoneme.Categories.PhonemeSubstitution
+     * @see de.unihamburg.informatik.wtm.docks.phoneme.PhonemeSubstitution
      */
     public PhoneData(String phoneID, int method) {
         this.phoneID = phoneID;
         this.method = method;
-
-
     }
 
     /**
@@ -65,6 +62,7 @@ public class PhoneData implements Data {
         return logMath.linearToLog(PhonemeSubstitution.getInstance(method).getScore(phoneID, otherPhone));
     }
 
+    @Override
     public String toString() {
         return phoneID;
     }
