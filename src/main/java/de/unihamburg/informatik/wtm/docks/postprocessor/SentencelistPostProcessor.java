@@ -42,7 +42,6 @@ public class SentencelistPostProcessor implements PostProcessor {
     private String TAG = "LevenshteinRecognizer";
     private PhonemeCreator pc;
     private ArrayList<PhonemeContainer> phonemesGrammar;
-    private Levenshtein ls;
     private int numberOfResults;
     private int referenceRecognizer;
     private String name = "LevenshteinRecognizer";
@@ -65,7 +64,6 @@ public class SentencelistPostProcessor implements PostProcessor {
         Printer.printWithTime(TAG, "loading phoneme database");
         pc = new PhonemeCreator(sentenceFile);
         Printer.printWithTime(TAG, "getting phonemes for speech result");
-        ls = new Levenshtein();
         phonemesGrammar = pc.pdb.arrayContent;
         this.numberOfResults = numberOfResults;
         referenceRecognizer = -1;
@@ -74,7 +72,6 @@ public class SentencelistPostProcessor implements PostProcessor {
 
     public SentencelistPostProcessor(List<String> sentences, int numberOfResults) {
         pc = PhonemeCreator.getInstance();
-        ls = new Levenshtein();
         phonemesGrammar = pc.getPhonemes(sentences);
         this.numberOfResults = numberOfResults;
         referenceRecognizer = -1;
@@ -108,7 +105,7 @@ public class SentencelistPostProcessor implements PostProcessor {
                 //take the minimal distance
                 for (int i = 0; i < phonemesSpeech.size(); i++) {
                     for (int j = 0; j < phonemesGrammar.size(); j++) {
-                        int diff = ls.diff(phonemesSpeech.get(i).getPhonemes(),
+                        int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
                                 phonemesGrammar.get(j).getPhonemes());
                         if (diff <= minDist) {
                             if (diff < minDist) {
@@ -132,7 +129,7 @@ public class SentencelistPostProcessor implements PostProcessor {
                 ArrayList<LevenshteinResult> resultList = new ArrayList<LevenshteinResult>();
                 for (int i = 0; i < phonemesSpeech.size(); i++) {
                     for (int j = 0; j < phonemesGrammar.size(); j++) {
-                        int diff = ls.diff(phonemesSpeech.get(i).getPhonemes(),
+                        int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
                                 phonemesGrammar.get(j).getPhonemes());
                         resultList.add(new LevenshteinResult(diff, j, i));
                     }
@@ -171,7 +168,7 @@ public class SentencelistPostProcessor implements PostProcessor {
         ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
         //calculate distances
         for (int i = 1; i < phonemesSpeech.size(); i++) {
-            int diff = ls.diff(phonemesSpeech.get(i).getPhonemes(),
+            int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
                     phonemesSpeech.get(0).getPhonemes());
             res[i - 1] = diff;
 

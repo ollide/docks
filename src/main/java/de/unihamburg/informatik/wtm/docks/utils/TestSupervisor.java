@@ -279,7 +279,6 @@ public class TestSupervisor {
 
 
         PhonemeCreator pc = new PhonemeCreator("speech_wtm_5words");
-        Levenshtein ls = new Levenshtein();
         try {
             boolean correct;
             br.readLine();
@@ -330,7 +329,7 @@ public class TestSupervisor {
                         }
                         ArrayList<PhonemeContainer> phonemes = pc.getPhonemes(r);
 
-                        int dist = ls.diff(phonemes.get(0).getPhonemes(),
+                        int dist = Levenshtein.diff(phonemes.get(0).getPhonemes(),
                                 phonemes.get(1).getPhonemes());
                         strLine = strLine + ";" + dist;
 
@@ -358,7 +357,7 @@ public class TestSupervisor {
                         int result = -1;
                         for (int i = 1; i < phonemes.size(); i++) {
 
-                            int dist = ls.diff(phonemes.get(0).getPhonemes(),
+                            int dist = Levenshtein.diff(phonemes.get(0).getPhonemes(),
                                     phonemes.get(i).getPhonemes());
 
                             if (dist < minDist) {
