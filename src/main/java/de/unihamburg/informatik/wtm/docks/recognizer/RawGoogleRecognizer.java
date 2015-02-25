@@ -59,6 +59,12 @@ public class RawGoogleRecognizer implements StandardRecognizer {
     private static final String TAG = "BaseRecognizer";
     private static final String NAME = "Google";
 
+    private final String key;
+
+    public RawGoogleRecognizer(String key) {
+        this.key = key;
+    }
+
     // get result from an open connection to Google
     private Result getResult(HttpURLConnection connection) {
         BufferedReader in;
@@ -128,7 +134,6 @@ public class RawGoogleRecognizer implements StandardRecognizer {
         LOG.debug(result.print());
 
         return result;
-
     }
 
     private static AudioFormat getAudioFormat() {
@@ -141,7 +146,6 @@ public class RawGoogleRecognizer implements StandardRecognizer {
                 channels, signed, bigEndian);
         return format;
     }
-
 
     // get connection to Google
     private HttpURLConnection getConnection() {
@@ -181,7 +185,6 @@ public class RawGoogleRecognizer implements StandardRecognizer {
         connection.setUseCaches(false);
 
         return connection;
-
     }
 
     // get the stream to write audio data to
@@ -245,7 +248,6 @@ public class RawGoogleRecognizer implements StandardRecognizer {
                 run = false;
         }
         Printer.printWithTime(TAG, "recording stopped");
-
     }
 
     /**
@@ -288,12 +290,12 @@ public class RawGoogleRecognizer implements StandardRecognizer {
         return res;
     }
 
-
     /**
      * recognize from an audio file (16kHz, 1 channel, signed, little endian)
      *
      * @param fileName path to the file containing audio
      */
+    @Override
     public Result recognizeFromFile(String fileName) {
 
         // open connection to google
@@ -341,26 +343,8 @@ public class RawGoogleRecognizer implements StandardRecognizer {
     }
 
     @Override
-    public Result recognizeFromResult(Result r) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getReferenceRecognizer() {
-        // TODO Auto-generated method stub
-        return -1;
-    }
-
-    @Override
     public String getName() {
         return NAME;
-    }
-
-    private String key;
-
-    public RawGoogleRecognizer(String key) {
-        this.key = key;
     }
 
 }

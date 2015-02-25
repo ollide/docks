@@ -32,7 +32,8 @@ import edu.cmu.sphinx.util.props.PropertyException;
  * segments incoming audio into utterances and silences.
  */
 public class SphinxRecognizer implements StandardRecognizer {
-    private String name = "SimpleSphinxRecognizer";
+
+    private static final String NAME = "SimpleSphinxRecognizer";
     private Recognizer recognizer;
     @SuppressWarnings("unused")
     private Microphone microphone;
@@ -43,20 +44,9 @@ public class SphinxRecognizer implements StandardRecognizer {
      * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
      *
      * @param configName name of config
-     * @param name       name of recognizer
-     */
-    public SphinxRecognizer(String configName, String name) {
-        this(configName);
-        this.name = name;
-    }
-
-    /**
-     * creates a new Sphinx recognizer using the given config name. the config name is used a prefix for XMLs, language model, dictionaries etc.
-     *
-     * @param configName name of config
      */
     public SphinxRecognizer(String configName) {
-        //get config and initialize
+        // get config and initialize
         try {
             cm = new ConfigurationManager(new File(configName).toURI().toURL());
         } catch (PropertyException e) {
@@ -86,7 +76,7 @@ public class SphinxRecognizer implements StandardRecognizer {
         return Float.parseFloat(cm.getGlobalProperty("wordInsertionProbability"));
     }
 
-
+    @Override
     public Result recognizeFromFile(String fileName) {
         URL audioURL = null;
         try {
@@ -126,22 +116,8 @@ public class SphinxRecognizer implements StandardRecognizer {
         return r;
     }
 
-
-    @Override
-    public Result recognizeFromResult(Result r) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public int getReferenceRecognizer() {
-        // TODO Auto-generated method stub
-        return -1;
-    }
-
     @Override
     public String getName() {
-        // TODO Auto-generated method stub
-        return name;
+        return NAME;
     }
 }

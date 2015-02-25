@@ -30,12 +30,8 @@ import de.unihamburg.informatik.wtm.docks.data.Result;
  */
 public interface StandardRecognizer {
 
-    public Result recognizeFromResult(Result r);
+    String getName();
 
-    public Result recognizeFromFile(String fileName);
-
-    public int getReferenceRecognizer();
-
-    public String getName();
+    Result recognizeFromFile(String fileName);
 
 }
