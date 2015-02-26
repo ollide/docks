@@ -121,6 +121,13 @@ public class Result implements Serializable {
     }
 
     /**
+     * @return confidence for best result
+     */
+    public float getConfidence() {
+        return confidence;
+    }
+
+    /**
      * @return n-best list as array
      */
     public String[] getResult() {
