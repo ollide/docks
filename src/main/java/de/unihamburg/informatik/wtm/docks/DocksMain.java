@@ -22,7 +22,6 @@
 package de.unihamburg.informatik.wtm.docks;
 
 import org.apache.commons.cli.*;
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,9 +32,11 @@ public class DocksMain {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocksMain.class);
 
-    public static void main(String[] args) {
-        BasicConfigurator.configure();
+    private DocksMain() {
+        // prevent instantiation
+    }
 
+    public static void main(String[] args) {
         Options options = new Options();
         options.addOption(OPTION_HELP, false, "print this message");
 
@@ -63,10 +64,6 @@ public class DocksMain {
         } catch (ParseException e) {
             LOG.error("Parsing failed. Reason: {}", e.getMessage());
         }
-    }
-
-    private DocksMain() {
-        // prevent instantiation
     }
 
     private static void printHelp(Options options) {
