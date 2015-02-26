@@ -30,7 +30,8 @@ import de.unihamburg.informatik.wtm.docks.data.Result;
 import de.unihamburg.informatik.wtm.docks.phoneme.PhonemeContainer;
 import de.unihamburg.informatik.wtm.docks.phoneme.PhonemeCreator;
 import de.unihamburg.informatik.wtm.docks.postprocessor.levenshteinbased.Levenshtein;
-import de.unihamburg.informatik.wtm.docks.utils.Printer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Sentencelist heuristic. Used to match a given result containing n-best list against a list of sentences
@@ -39,11 +40,12 @@ import de.unihamburg.informatik.wtm.docks.utils.Printer;
  */
 public class SentencelistPostProcessor implements PostProcessor {
 
-    private String TAG = "LevenshteinRecognizer";
+    private static final Logger LOG = LoggerFactory.getLogger(SentencelistPostProcessor.class);
+
     private PhonemeCreator pc;
     private List<PhonemeContainer> phonemesGrammar;
     private int numberOfResults;
-    private int referenceRecognizer;
+    private int referenceRecognizer = -1;
     private String name = "LevenshteinRecognizer";
 
     /**
@@ -61,20 +63,20 @@ public class SentencelistPostProcessor implements PostProcessor {
     }
 
     public SentencelistPostProcessor(String sentenceFile, int numberOfResults) {
-        Printer.printWithTime(TAG, "loading phoneme database");
+        LOG.debug("loading phoneme database");
         pc = new PhonemeCreator(sentenceFile);
-        Printer.printWithTime(TAG, "getting phonemes for speech result");
+
+        LOG.debug("getting phonemes for speech result");
         phonemesGrammar = pc.getPhonemeDb().getPhonemes();
         this.numberOfResults = numberOfResults;
-        referenceRecognizer = -1;
-        Printer.printWithTime(TAG, "SentencelistPostProcessor created");
+
+        LOG.debug("SentencelistPostProcessor created");
     }
 
     public SentencelistPostProcessor(List<String> sentences, int numberOfResults) {
         pc = PhonemeCreator.getInstance();
         phonemesGrammar = pc.getPhonemes(sentences);
         this.numberOfResults = numberOfResults;
-        referenceRecognizer = -1;
     }
 
     /**
@@ -85,23 +87,21 @@ public class SentencelistPostProcessor implements PostProcessor {
     @Override
     @SuppressWarnings("unchecked")
     public Result recognizeFromResult(Result r) {
-
         // get phonemes for r
         List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
-
         if (phonemesSpeech != null) {
-            Printer.printWithTime(TAG, "calculating levenshtein distances");
+
+            LOG.debug("calculating levenshtein distances");
 
             int minDist = 10000;
-
             int result = -1;
 
-            Printer.printWithTime(TAG, "phonemesGrammar.size: " + phonemesGrammar.size());
+            LOG.debug("phonemesGrammar.size: {}", phonemesGrammar.size());
 
-            //if one result is preferred
+            // if one result is preferred
             if (numberOfResults == 1) {
-                //calculate Levenshtein distance for n-best list vs sentence list
-                //take the minimal distance
+                // calculate Levenshtein distance for n-best list vs sentence list
+                // take the minimal distance
                 for (int i = 0; i < phonemesSpeech.size(); i++) {
                     for (int j = 0; j < phonemesGrammar.size(); j++) {
                         int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
@@ -110,14 +110,12 @@ public class SentencelistPostProcessor implements PostProcessor {
                             if (diff < minDist) {
                                 minDist = diff;
                                 result = j;
-
                             }
                         }
-
                     }
                 }
 
-                Printer.printWithTime(TAG, "result is : " + result);
+                LOG.info("result is : {}", result);
                 //return sentence with the minimal distance
                 //phonemesGrammar.get(result).print();
                 r = new Result();
@@ -143,7 +141,7 @@ public class SentencelistPostProcessor implements PostProcessor {
                 }
 
             }
-            Printer.printWithTimeF(TAG, "levenshtein distances calculated");
+            LOG.debug("levenshtein distances calculated");
 
         }
         return r;
