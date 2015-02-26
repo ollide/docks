@@ -59,6 +59,83 @@ public class PhonemeCreator {
     private static final String TAG = "PhonemeCreator";
     private static PhonemeCreator instance;
 
+    private G2PConverter g2pDecoder;
+
+    /**
+     * creates a new phoneme creator and caches the results for the list of sentences
+     *
+     * @param sentenceFile
+     */
+    public PhonemeCreator(String sentenceFile) {
+        this();
+        InputStream fis = null;
+        ObjectInputStream o1 = null;
+        ObjectInputStream o2 = null;
+
+        try {
+            // try to read the cached phonemes
+            fis = new FileInputStream(sentenceFile + ".ser");
+            o1 = new ObjectInputStream(fis);
+
+            pdb = new PhonemeDB();
+            pdb = (PhonemeDB) o1.readObject();
+
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+
+            // if no cached phonemes are available cache ones
+            fillDatabase(sentenceFile);
+
+            // try to read the cached phonemes again
+            try {
+                fis = new FileInputStream(sentenceFile + ".ser");
+                o2 = new ObjectInputStream(fis);
+
+                pdb = new PhonemeDB();
+                pdb = (PhonemeDB) o2.readObject();
+
+            } catch (FileNotFoundException e1) {
+                e1.printStackTrace();
+            } catch (IOException e2) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e3) {
+                e.printStackTrace();
+            }
+
+        } catch (ClassNotFoundException e) {
+            System.err.println(e.getMessage());
+
+        } finally {
+            IOUtils.closeQuietly(fis);
+            IOUtils.closeQuietly(o1);
+            IOUtils.closeQuietly(o2);
+            System.out.println("Loaded " + sentenceFile + ".ser successfully");
+        }
+    }
+
+    /**
+     * creates a new phoneme creator. used when no precached results of a list of sentences should be loaded
+     */
+    private PhonemeCreator() {
+        ClassLoader cl = this.getClass().getClassLoader();
+        URL sequiturSphinxModel = cl.getResource("g2p/sequitur/cmudict_sequitur.fst.ser");
+        try {
+            g2pDecoder = new G2PConverter(sequiturSphinxModel);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * creates an instance of a phoneme creator. used when no precached results of a list of sentences should be loaded
+     */
+    public synchronized static PhonemeCreator getInstance() {
+        if (instance == null) {
+            instance = new PhonemeCreator();
+        }
+        return instance;
+    }
+
     /**
      * creates a list of phonemes corresponding to the list of results contained in r
      *
@@ -88,7 +165,7 @@ public class PhonemeCreator {
         try {
 
             Printer.printWithTimeF(TAG, "formatting raw results");
-            //convert all results to lowercase and remove special characters
+            // convert all results to lowercase and remove special characters
             for (String s : rawResults) {
                 Printer.printWithTimeF(TAG, "raw result: " + s);
 
@@ -98,21 +175,18 @@ public class PhonemeCreator {
                     rawResults.remove(s);
                     continue;
                 }
-                if (s.charAt(0) == ' ')
+                if (s.charAt(0) == ' ') {
                     s = s.substring(1);
+                }
 
-                //System.out.println("S: "+s);
-                //split the sentences to words and add theses to the args for SequiturG2P
-
+                // split the sentences to words and add theses to the args for SequiturG2P
                 String[] words = s.toLowerCase().split(" ");
 
                 PhonemeContainer pc = new PhonemeContainer(words);
 
                 ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
-                //System.out.println("Sphinx G2P");
 
                 for (Path p : paths) {
-                    //System.out.println(p.getPath());
 
                     String[] phonemes = new String[p.getPath().size()];
                     p.getPath().toArray(phonemes);
@@ -127,99 +201,21 @@ public class PhonemeCreator {
             System.err.println("Error: " + e.getMessage());
         }
 
-        //return the phoneme containers
         return resultsWithPhonemes;
-    }
-
-    private G2PConverter g2pDecoder;
-
-    /**
-     * creates a new phoneme creator. used when no precached results of a list of sentences should be loaded
-     */
-    private PhonemeCreator() {
-        ClassLoader cl = this.getClass().getClassLoader();
-        URL sequiturSphinxModel = cl.getResource("g2p/sequitur/cmudict_sequitur.fst.ser");
-        try {
-            g2pDecoder = new G2PConverter(sequiturSphinxModel);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * creates an instance of a phoneme creator. used when no precached results of a list of sentences should be loaded
-     */
-    public synchronized static PhonemeCreator getInstance() {
-        if (instance == null) {
-            instance = new PhonemeCreator();
-        }
-        return instance;
-    }
-
-    /**
-     * creates a new phoneme creator and caches the results for the list of sentences
-     *
-     * @param sentenceFile
-     */
-    public PhonemeCreator(String sentenceFile) {
-        this();
-        InputStream fis = null;
-        ObjectInputStream o1 = null;
-        ObjectInputStream o2 = null;
-
-        try {
-            //try to read the cached phonemes
-            fis = new FileInputStream(sentenceFile + ".ser");
-            o1 = new ObjectInputStream(fis);
-
-            pdb = new PhonemeDB();
-            pdb = (PhonemeDB) o1.readObject();
-
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
-
-            //if no cached phonemes are available cache ones
-            fillDatabase(sentenceFile);
-
-            //try to read the cached phonemes again
-            try {
-                fis = new FileInputStream(sentenceFile + ".ser");
-                o2 = new ObjectInputStream(fis);
-
-                pdb = new PhonemeDB();
-                pdb = (PhonemeDB) o2.readObject();
-
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e3) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            System.err.println(e.getMessage());
-
-        } finally {
-            IOUtils.closeQuietly(fis);
-            IOUtils.closeQuietly(o1);
-            IOUtils.closeQuietly(o2);
-            System.out.println("Loaded " + sentenceFile + ".ser successfully");
-        }
     }
 
     private void fillDatabase(String sentenceFile) {
 
         Scanner in = null;
         try {
-            //reads sentence file
+            // reads sentence file
             in = new Scanner(new FileReader(sentenceFile + ".txt"));
             in.useDelimiter("\n");
 
             Result r = new Result();
             String temp;
 
-            //separate words and add the to the input arg
+            // separate words and add the to the input arg
             while (in.hasNext()) {
                 temp = in.next();
                 if (temp.contains("\r")) {
@@ -230,16 +226,16 @@ public class PhonemeCreator {
             }
             System.out.println("getting results");
 
-            //get the phonemes
+            // get the phonemes
             ArrayList<PhonemeContainer> phonemes = getPhonemes(r);
 
             System.out.println("phoneme creation successful!");
 
-            //set the public data base to the phonemes
+            // set the public data base to the phonemes
             PhonemeDB pdb = new PhonemeDB();
             pdb.arrayContent = getPhonemes(r);
 
-            //add the phonemes to the database
+            // add the phonemes to the database
             for (PhonemeContainer res : phonemes) {
                 String x = "";
                 for (String w : res.getWords()) {
@@ -256,7 +252,7 @@ public class PhonemeCreator {
             OutputStream fos = null;
             ObjectOutputStream o = null;
 
-            //serialize the database
+            // serialize the database
             try {
                 fos = new FileOutputStream(sentenceFile + ".ser");
                 o = new ObjectOutputStream(fos);
