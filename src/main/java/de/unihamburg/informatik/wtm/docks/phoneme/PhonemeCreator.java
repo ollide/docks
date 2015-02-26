@@ -236,7 +236,9 @@ public class PhonemeCreator {
         } catch (FileNotFoundException e) {
             LOG.error("failed to load sentence file {}. PhonemeDB is still empty.", sentenceFile);
         } finally {
-            IOUtils.closeQuietly(in);
+            if (in != null) {
+                in.close();
+            }
         }
     }
 }
