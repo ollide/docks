@@ -51,15 +51,14 @@ import org.apache.commons.io.IOUtils;
  */
 public class PhonemeCreator {
 
-    /**
-     * the public phoneme data base created for a predefined list of sentences or words
-     */
-    public PhonemeDB pdb;
-
     private static final String TAG = "PhonemeCreator";
     private static PhonemeCreator instance;
 
     private G2PConverter g2pDecoder;
+    /**
+     * the phoneme data base created for a predefined list of sentences or words
+     */
+    private PhonemeDB pdb;
 
     /**
      * creates a new phoneme creator and caches the results for the list of sentences
@@ -129,7 +128,7 @@ public class PhonemeCreator {
     /**
      * creates an instance of a phoneme creator. used when no precached results of a list of sentences should be loaded
      */
-    public synchronized static PhonemeCreator getInstance() {
+    public static synchronized PhonemeCreator getInstance() {
         if (instance == null) {
             instance = new PhonemeCreator();
         }
@@ -142,7 +141,7 @@ public class PhonemeCreator {
      * @param r Result received from a speech recognizer or postprocessor. needs to contain 1 result as string as a minimum
      * @return
      */
-    public ArrayList<PhonemeContainer> getPhonemes(Result r) {
+    public List<PhonemeContainer> getPhonemes(Result r) {
         return getPhonemes(r.getResultList());
     }
 
@@ -152,56 +151,53 @@ public class PhonemeCreator {
      * @param rawResults Result list received from a speech recognizer or postprocessor. needs to contain 1 entry as string as a minimum
      * @return
      */
-    public ArrayList<PhonemeContainer> getPhonemes(List<String> rawResults) {
+    public List<PhonemeContainer> getPhonemes(List<String> rawResults) {
         Printer.printWithTimeF(TAG, "getting Phonemes");
 
+        List<PhonemeContainer> resultsWithPhonemes = new ArrayList<PhonemeContainer>();
+
         if (rawResults == null) {
-            return null;
+            return resultsWithPhonemes;
         }
 
-        ArrayList<PhonemeContainer> resultsWithPhonemes = new ArrayList<PhonemeContainer>();
-        Printer.printWithTimeF(TAG, "created lists");
+        Printer.printWithTimeF(TAG, "formatting raw results");
+        // convert all results to lowercase and remove special characters
+        for (String s : rawResults) {
+            Printer.printWithTimeF(TAG, "raw result: " + s);
 
-        try {
-
-            Printer.printWithTimeF(TAG, "formatting raw results");
-            // convert all results to lowercase and remove special characters
-            for (String s : rawResults) {
-                Printer.printWithTimeF(TAG, "raw result: " + s);
-
-                s = s.replaceAll("[^a-zA-Z 0-9]", "");
-                s = s.replaceAll(" +", " ");
-                if (s.equals("")) {
-                    rawResults.remove(s);
-                    continue;
-                }
-                if (s.charAt(0) == ' ') {
-                    s = s.substring(1);
-                }
-
-                // split the sentences to words and add theses to the args for SequiturG2P
-                String[] words = s.toLowerCase().split(" ");
-
-                PhonemeContainer pc = new PhonemeContainer(words);
-
-                ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
-
-                for (Path p : paths) {
-
-                    String[] phonemes = new String[p.getPath().size()];
-                    p.getPath().toArray(phonemes);
-                    pc.addPhonemesNoJep(phonemes);
-                    break;
-                }
-
-                resultsWithPhonemes.add(pc);
+            s = s.replaceAll("[^a-zA-Z 0-9]", "");
+            s = s.replaceAll(" +", " ");
+            if ("".equals(s)) {
+                rawResults.remove(s);
+                continue;
+            }
+            if (s.charAt(0) == ' ') {
+                s = s.substring(1);
             }
 
-        } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            // split the sentences to words and add theses to the args for SequiturG2P
+            String[] words = s.toLowerCase().split(" ");
+
+            PhonemeContainer pc = new PhonemeContainer(words);
+
+            ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
+
+            for (Path p : paths) {
+
+                String[] phonemes = new String[p.getPath().size()];
+                p.getPath().toArray(phonemes);
+                pc.addPhonemesNoJep(phonemes);
+                break;
+            }
+
+            resultsWithPhonemes.add(pc);
         }
 
         return resultsWithPhonemes;
+    }
+
+    public PhonemeDB getPhonemeDb() {
+        return pdb;
     }
 
     private void fillDatabase(String sentenceFile) {
@@ -227,26 +223,17 @@ public class PhonemeCreator {
             System.out.println("getting results");
 
             // get the phonemes
-            ArrayList<PhonemeContainer> phonemes = getPhonemes(r);
+            List<PhonemeContainer> phonemes = getPhonemes(r);
 
             System.out.println("phoneme creation successful!");
 
             // set the public data base to the phonemes
             PhonemeDB pdb = new PhonemeDB();
-            pdb.arrayContent = getPhonemes(r);
+            pdb.setPhonemes(getPhonemes(r));
 
             // add the phonemes to the database
             for (PhonemeContainer res : phonemes) {
-                String x = "";
-                for (String w : res.getWords()) {
-                    if (w == null)
-                        break;
-                    if (x.equals(""))
-                        x = w;
-                    else
-                        x = x + " " + w;
-                }
-                pdb.hashContent.put(x, res.getPhonemes());
+                pdb.addHashContent(res.getResult(), res.getPhonemes());
             }
 
             OutputStream fos = null;

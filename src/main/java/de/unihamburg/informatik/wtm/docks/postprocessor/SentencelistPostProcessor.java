@@ -41,7 +41,7 @@ public class SentencelistPostProcessor implements PostProcessor {
 
     private String TAG = "LevenshteinRecognizer";
     private PhonemeCreator pc;
-    private ArrayList<PhonemeContainer> phonemesGrammar;
+    private List<PhonemeContainer> phonemesGrammar;
     private int numberOfResults;
     private int referenceRecognizer;
     private String name = "LevenshteinRecognizer";
@@ -64,7 +64,7 @@ public class SentencelistPostProcessor implements PostProcessor {
         Printer.printWithTime(TAG, "loading phoneme database");
         pc = new PhonemeCreator(sentenceFile);
         Printer.printWithTime(TAG, "getting phonemes for speech result");
-        phonemesGrammar = pc.pdb.arrayContent;
+        phonemesGrammar = pc.getPhonemeDb().getPhonemes();
         this.numberOfResults = numberOfResults;
         referenceRecognizer = -1;
         Printer.printWithTime(TAG, "SentencelistPostProcessor created");
@@ -87,7 +87,7 @@ public class SentencelistPostProcessor implements PostProcessor {
     public Result recognizeFromResult(Result r) {
 
         // get phonemes for r
-        ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
+        List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
 
         if (phonemesSpeech != null) {
             Printer.printWithTime(TAG, "calculating levenshtein distances");
@@ -125,7 +125,7 @@ public class SentencelistPostProcessor implements PostProcessor {
 
             } else {
                 //do the same if more results are preferred
-                ArrayList<LevenshteinResult> resultList = new ArrayList<LevenshteinResult>();
+                List<LevenshteinResult> resultList = new ArrayList<LevenshteinResult>();
                 for (int i = 0; i < phonemesSpeech.size(); i++) {
                     for (int j = 0; j < phonemesGrammar.size(); j++) {
                         int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
@@ -165,7 +165,7 @@ public class SentencelistPostProcessor implements PostProcessor {
             r.addResult(s);
         }
         // get phonemes
-        ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
+        List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
 
         final String[] inputPhonemes = phonemesSpeech.get(0).getPhonemes();
 

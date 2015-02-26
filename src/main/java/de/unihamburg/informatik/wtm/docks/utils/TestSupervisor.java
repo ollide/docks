@@ -34,11 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -327,7 +323,7 @@ public class TestSupervisor {
                                 }
                             }
                         }
-                        ArrayList<PhonemeContainer> phonemes = pc.getPhonemes(r);
+                        List<PhonemeContainer> phonemes = pc.getPhonemes(r);
 
                         int dist = Levenshtein.diff(phonemes.get(0).getPhonemes(),
                                 phonemes.get(1).getPhonemes());
@@ -351,7 +347,7 @@ public class TestSupervisor {
                             }
                         }
 
-                        ArrayList<PhonemeContainer> phonemes = pc.getPhonemes(r);
+                        List<PhonemeContainer> phonemes = pc.getPhonemes(r);
 
                         int minDist = 1000;
                         int result = -1;
@@ -987,7 +983,7 @@ public class TestSupervisor {
                     final NISTAlign alignerPhonemes = new NISTAlign(true, true);
                     final NISTAlign alignerPhonemesReverse = new NISTAlign(
                             true, true);
-                    ArrayList<PhonemeContainer> phonemesSpeech = null;
+                    List<PhonemeContainer> phonemesSpeech = null;
                     Result r;
                     HashMap<String, Integer> hm = new HashMap<String, Integer>();
 

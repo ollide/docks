@@ -24,7 +24,7 @@ package de.unihamburg.informatik.wtm.docks.phoneme;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-
+import java.util.List;
 
 /**
  * containes the stored phonemes (used by phoneme creator)
@@ -33,12 +33,22 @@ import java.util.HashMap;
  */
 public class PhonemeDB implements Serializable {
 
-    /**
-     *
-     */
     private static final long serialVersionUID = 6246046410395137574L;
 
-    HashMap<String, String[]> hashContent = new HashMap<String, String[]>();
-    public ArrayList<PhonemeContainer> arrayContent = new ArrayList<PhonemeContainer>();
+    // TODO: hashContent is never used (?)
+    private HashMap<String, String[]> hashContent = new HashMap<String, String[]>();
+    private List<PhonemeContainer> arrayContent = new ArrayList<PhonemeContainer>();
+
+    public List<PhonemeContainer> getPhonemes() {
+        return arrayContent;
+    }
+
+    public void setPhonemes(List<PhonemeContainer> phonemes) {
+        arrayContent = phonemes;
+    }
+
+    public void addHashContent(String words, String[] phonemes) {
+        hashContent.put(words, phonemes);
+    }
 
 }

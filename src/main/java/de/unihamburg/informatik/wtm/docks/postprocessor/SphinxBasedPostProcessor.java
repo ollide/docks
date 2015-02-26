@@ -23,7 +23,7 @@ package de.unihamburg.informatik.wtm.docks.postprocessor;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -110,7 +110,7 @@ public class SphinxBasedPostProcessor implements PostProcessor {
     @Override
     public Result recognizeFromResult(Result r) {
         //get phonemes
-        ArrayList<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
+        List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
 
         //get best result
         String[] phonemes = phonemesSpeech.get(0).getPhonemes();

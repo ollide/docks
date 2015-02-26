@@ -22,9 +22,9 @@
 package de.unihamburg.informatik.wtm.docks.phoneme;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.List;
 
 import de.unihamburg.informatik.wtm.docks.data.Result;
 import de.unihamburg.informatik.wtm.docks.phoneme.categories.Excitation;
@@ -277,7 +277,7 @@ public class PhonemeSubstitution {
 
                     final NISTAlign alignerPhonemesReverse = new NISTAlign(
                             true, true);
-                    ArrayList<PhonemeContainer> phonemesSpeech = null;
+                    List<PhonemeContainer> phonemesSpeech = null;
                     Result r;
                     HashMap<String, Integer> hm = new HashMap<String, Integer>();
 

@@ -3,7 +3,6 @@ package de.unihamburg.informatik.wtm.docks.phoneme;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class PhonemeCreatorTest {
         words.add("is");
         words.add("test");
 
-        ArrayList<PhonemeContainer> phonemes = pc.getPhonemes(words);
+        List<PhonemeContainer> phonemes = pc.getPhonemes(words);
         Assert.assertEquals("Size of phoneme list should match the word list size.", words.size(), phonemes.size());
 
         for (int i = 0; i < words.size(); i++) {
