@@ -41,27 +41,18 @@ import org.slf4j.LoggerFactory;
 public class SentencelistPostProcessor implements PostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SentencelistPostProcessor.class);
+    private static final String NAME = "LevenshteinRecognizer";
 
     private PhonemeCreator pc;
     private List<PhonemeContainer> phonemesGrammar;
     private int numberOfResults;
-    private int referenceRecognizer = -1;
-    private String name = "LevenshteinRecognizer";
 
     /**
      * Creates a new Sentencelist postprocessor
      *
-     * @param sentenceFile        path to list of sentences
-     * @param numberOfResults     number of results to be returned (1 is fastest)
-     * @param referenceRecognizer recognizer the result is postprocessed from
-     * @param name                of the recognizer
+     * @param sentenceFile    path to list of sentences
+     * @param numberOfResults number of results to be returned (1 is fastest)
      */
-    public SentencelistPostProcessor(String sentenceFile, int numberOfResults, int referenceRecognizer, String name) {
-        this(sentenceFile, numberOfResults);
-        this.referenceRecognizer = referenceRecognizer;
-        this.name = name;
-    }
-
     public SentencelistPostProcessor(String sentenceFile, int numberOfResults) {
         LOG.debug("loading phoneme database");
         pc = new PhonemeCreator(sentenceFile);
@@ -159,13 +150,8 @@ public class SentencelistPostProcessor implements PostProcessor {
     }
 
     @Override
-    public int getReferenceRecognizer() {
-        return referenceRecognizer;
-    }
-
-    @Override
     public String getName() {
-        return name;
+        return NAME;
     }
 
 }

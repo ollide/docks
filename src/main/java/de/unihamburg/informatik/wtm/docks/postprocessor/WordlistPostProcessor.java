@@ -30,22 +30,9 @@ import de.unihamburg.informatik.wtm.docks.data.Result;
  */
 public class WordlistPostProcessor implements PostProcessor {
 
-    private SentencelistPostProcessor lr;
-    private int referenceRecognizer;
-    private String name = "LexiconLookupRecognizer";
+    private static final String NAME = "LexiconLookupRecognizer";
 
-    /**
-     * creates a new wordlist postprocessor
-     *
-     * @param wordFile            path to list of words
-     * @param referenceRecognizer recognizer the result is postprocessed from
-     * @param name                of this recognizer
-     */
-    public WordlistPostProcessor(String wordFile, int referenceRecognizer, String name) {
-        this(wordFile);
-        this.referenceRecognizer = referenceRecognizer;
-        this.name = name;
-    }
+    private SentencelistPostProcessor lr;
 
     /**
      * create a new wordlist postprocessor
@@ -53,10 +40,8 @@ public class WordlistPostProcessor implements PostProcessor {
      * @param wordFile path to word list
      */
     public WordlistPostProcessor(String wordFile) {
-        super();
-        //use a Sentencelist postprocessor internally
+        // use a Sentencelist postprocessor internally
         this.lr = new SentencelistPostProcessor(wordFile, 1);
-        referenceRecognizer = -1;
     }
 
     /**
@@ -66,20 +51,22 @@ public class WordlistPostProcessor implements PostProcessor {
      */
     @Override
     public Result recognizeFromResult(Result r) {
-        //split the best result into words
+        // split the best result into words
         Result result = new Result();
         String hyp = r.getBestResult();
         String[] words = hyp.split(" ");
         String res = null;
-        //match each word against the list of words
+
+        // match each word against the list of words
         for (String s : words) {
             Result rTemp = new Result();
             rTemp.addResult(s);
             rTemp = lr.recognizeFromResult(rTemp);
-            if (res == null)
+            if (res == null) {
                 res = rTemp.getBestResult();
-            else
+            } else {
                 res = res + " " + rTemp.getBestResult();
+            }
         }
         result.addResult(res);
 
@@ -87,13 +74,8 @@ public class WordlistPostProcessor implements PostProcessor {
     }
 
     @Override
-    public int getReferenceRecognizer() {
-        return referenceRecognizer;
-    }
-
-    @Override
     public String getName() {
-        return name;
+        return NAME;
     }
 
 }

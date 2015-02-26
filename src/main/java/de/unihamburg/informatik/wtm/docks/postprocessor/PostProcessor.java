@@ -32,8 +32,6 @@ public interface PostProcessor {
 
     public Result recognizeFromResult(Result r);
 
-    public int getReferenceRecognizer();
-
     public String getName();
 
 }

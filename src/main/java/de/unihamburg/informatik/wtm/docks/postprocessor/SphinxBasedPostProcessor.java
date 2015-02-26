@@ -22,7 +22,6 @@
 package de.unihamburg.informatik.wtm.docks.postprocessor;
 
 import java.io.File;
-import java.net.MalformedURLException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,7 +33,8 @@ import de.unihamburg.informatik.wtm.docks.phoneme.PhonemeCreator;
 import edu.cmu.sphinx.decoder.search.Token;
 import edu.cmu.sphinx.recognizer.Recognizer;
 import edu.cmu.sphinx.util.props.ConfigurationManager;
-import edu.cmu.sphinx.util.props.PropertyException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * based on sphinx example
@@ -42,14 +42,14 @@ import edu.cmu.sphinx.util.props.PropertyException;
  */
 public class SphinxBasedPostProcessor implements PostProcessor {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SphinxBasedPostProcessor.class);
+    private static final String NAME = "PhonemeNgramRecognizer";
+
     private ConfigurationManager cm;
     private Recognizer recognizer;
 
     private PhonemeCreator pc;
     private PhoneFrontEnd pfe;
-    private int referenceRecognizer;
-
-    private String name = "PhonemeNgramRecognizer";
 
     /**
      * creates a new sphinx based postprocessor
@@ -61,25 +61,23 @@ public class SphinxBasedPostProcessor implements PostProcessor {
      * @param substitutionMethod       parameter used internally, but 0 here if you don't know what you are doing
      */
     public SphinxBasedPostProcessor(String configName, String sentenceFile, float languageWeight, float wordInsertionProbability, int substitutionMethod) {
-        //load config xml
         try {
+            // load config xml
             cm = new ConfigurationManager(new File(configName).toURI().toURL());
-        } catch (PropertyException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("failed to load required config " + configName + ", error: " + e.getMessage());
         }
-        referenceRecognizer = -1;
 
-        if (languageWeight != 0)
+        if (languageWeight != 0) {
             cm.setGlobalProperty("languageWeight", languageWeight + "");
-        if (wordInsertionProbability != 0)
+        }
+        if (wordInsertionProbability != 0) {
             cm.setGlobalProperty("wordInsertionProbability", wordInsertionProbability + "");
-        System.out.println("LW: " + getLanguageWeight() + " WIP: " + getWIP());
+        }
 
-        //initialize frontend, recognizer and phoneme creator
+        LOG.debug("LW: {} WIP: {}", getLanguageWeight(), getWIP());
+
+        // initialize frontend, recognizer and phoneme creator
         pfe = (PhoneFrontEnd) cm.lookup("frontend");
         pfe.setSubstitutionMethod(substitutionMethod);
 
@@ -109,32 +107,34 @@ public class SphinxBasedPostProcessor implements PostProcessor {
      */
     @Override
     public Result recognizeFromResult(Result r) {
-        //get phonemes
+        // get phonemes
         List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
 
-        //get best result
+        // get best result
         String[] phonemes = phonemesSpeech.get(0).getPhonemes();
 
-        //ad to phone frontend
+        // ad to phone frontend
         pfe.addPhonemes(phonemes);
 
-        //start postprocessing
+        // start postprocessing
         r = null;
         edu.cmu.sphinx.result.Result result;
         while ((result = recognizer.recognize()) != null) {
-            if (r == null)
+            if (r == null) {
                 r = new Result();
+            }
 
             String refPhoneme = "";
-            for (String s : phonemes)
+            for (String s : phonemes) {
                 refPhoneme = refPhoneme + s + " ";
+            }
 
-            //get phoneme sequence of hypotheses
+            // get phoneme sequence of hypotheses
             String[] s2 = result.getBestPronunciationResult().split(" ");
             Pattern p = Pattern.compile(".*\\[(.*)\\]");
 
             String hypPhoneme = "";
-            //get phonemes for hypotheses phoneme sequence
+            // get phonemes for hypotheses phoneme sequence
             for (String s : s2) {
                 Matcher m = p.matcher(s);
                 if (m.find()) {
@@ -144,39 +144,33 @@ public class SphinxBasedPostProcessor implements PostProcessor {
                 }
             }
 
-            //set the phoneme sequences in the result
+            // set the phoneme sequences in the result
             r.setRefPhoneme(refPhoneme);
             r.setHypPhoneme(hypPhoneme);
 
-
-            //get best result
+            // get best result
             String resultText = result.getBestFinalResultNoFiller();
-            if (resultText.equals(""))
+            if ("".equals(resultText)) {
                 return null;
+            }
             r.addResult(resultText);
 
-            //add rest to 10-best list
+            // add rest to 10-best list
             int i = 0;
             for (Token t : result.getResultTokens()) {
-
-                if (i >= 9)
+                if (i >= 9) {
                     break;
+                }
                 r.addResult(t.getWordPathNoFiller());
                 i++;
             }
-
         }
         return r;
     }
 
     @Override
-    public int getReferenceRecognizer() {
-        return referenceRecognizer;
-    }
-
-    @Override
     public String getName() {
-        return name;
+        return NAME;
     }
 
 }
