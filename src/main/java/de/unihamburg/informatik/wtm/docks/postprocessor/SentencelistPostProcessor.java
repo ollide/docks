@@ -112,6 +112,18 @@ public class SentencelistPostProcessor implements PostProcessor {
                 PhonemeContainer pc = phonemesGrammar.get(lr.getIndex());
 
                 result.addResult(pc.getResult());
+
+                if (i == 0) {
+                    // calculate confidence for best result based on LD & phoneme length
+                    final int resultPhonemeLength = pc.getPhonemes().length;
+                    final int phonemeDistance = lr.getDistance();
+                    final float confidence = Math.max(0, (1 - ((float) phonemeDistance) / (float) resultPhonemeLength));
+
+                    LOG.info("Best result: {} (LD: {}, confidence: {})", pc.getResult(), phonemeDistance, confidence);
+                    LOG.debug("Best result phoneme length: {}", resultPhonemeLength);
+
+                    result.setConfidence(confidence);
+                }
             }
         }
         LOG.debug("levenshtein distances calculated");
