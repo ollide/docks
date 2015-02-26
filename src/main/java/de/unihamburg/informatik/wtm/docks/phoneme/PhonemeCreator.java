@@ -42,6 +42,8 @@ import edu.cmu.sphinx.linguist.g2p.Path;
 import de.unihamburg.informatik.wtm.docks.data.Result;
 import de.unihamburg.informatik.wtm.docks.utils.Printer;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * class used to convert graphemes to phonemes.
@@ -50,6 +52,8 @@ import org.apache.commons.io.IOUtils;
  * @author 7twiefel
  */
 public class PhonemeCreator {
+
+    private static final Logger LOG = LoggerFactory.getLogger(PhonemeCreator.class);
 
     private static final String TAG = "PhonemeCreator";
     private static PhonemeCreator instance;
@@ -69,7 +73,6 @@ public class PhonemeCreator {
         this();
         InputStream fis = null;
         ObjectInputStream o1 = null;
-        ObjectInputStream o2 = null;
 
         try {
             // try to read the cached phonemes
@@ -79,36 +82,16 @@ public class PhonemeCreator {
             pdb = new PhonemeDB();
             pdb = (PhonemeDB) o1.readObject();
 
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
+            LOG.info("successfully loaded phoneme db {}.ser", sentenceFile);
+        } catch (Exception e) {
+            LOG.info("failed to read cached phonemes from {}.ser, creating new database.", sentenceFile);
 
             // if no cached phonemes are available cache ones
             fillDatabase(sentenceFile);
 
-            // try to read the cached phonemes again
-            try {
-                fis = new FileInputStream(sentenceFile + ".ser");
-                o2 = new ObjectInputStream(fis);
-
-                pdb = new PhonemeDB();
-                pdb = (PhonemeDB) o2.readObject();
-
-            } catch (FileNotFoundException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e3) {
-                e.printStackTrace();
-            }
-
-        } catch (ClassNotFoundException e) {
-            System.err.println(e.getMessage());
-
         } finally {
             IOUtils.closeQuietly(fis);
             IOUtils.closeQuietly(o1);
-            IOUtils.closeQuietly(o2);
-            System.out.println("Loaded " + sentenceFile + ".ser successfully");
         }
     }
 
@@ -121,7 +104,7 @@ public class PhonemeCreator {
         try {
             g2pDecoder = new G2PConverter(sequiturSphinxModel);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("failed to create G2PConverter with given SphinxModel");
         }
     }
 
@@ -139,7 +122,7 @@ public class PhonemeCreator {
      * creates a list of phonemes corresponding to the list of results contained in r
      *
      * @param r Result received from a speech recognizer or postprocessor. needs to contain 1 result as string as a minimum
-     * @return
+     * @return list of phonemes wrapped into a PhonemeContainer
      */
     public List<PhonemeContainer> getPhonemes(Result r) {
         return getPhonemes(r.getResultList());
@@ -149,7 +132,7 @@ public class PhonemeCreator {
      * Creates a list of phonemes corresponding to the list of raw results.
      *
      * @param rawResults Result list received from a speech recognizer or postprocessor. needs to contain 1 entry as string as a minimum
-     * @return
+     * @return list of phonemes wrapped into a PhonemeContainer
      */
     public List<PhonemeContainer> getPhonemes(List<String> rawResults) {
         Printer.printWithTimeF(TAG, "getting Phonemes");
@@ -181,14 +164,11 @@ public class PhonemeCreator {
             PhonemeContainer pc = new PhonemeContainer(words);
 
             ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
+            Path p = paths.get(0);
 
-            for (Path p : paths) {
-
-                String[] phonemes = new String[p.getPath().size()];
-                p.getPath().toArray(phonemes);
-                pc.addPhonemesNoJep(phonemes);
-                break;
-            }
+            String[] phonemes = new String[p.getPath().size()];
+            p.getPath().toArray(phonemes);
+            pc.addPhonemesNoJep(phonemes);
 
             resultsWithPhonemes.add(pc);
         }
@@ -201,6 +181,7 @@ public class PhonemeCreator {
     }
 
     private void fillDatabase(String sentenceFile) {
+        pdb = new PhonemeDB();
 
         Scanner in = null;
         try {
@@ -220,15 +201,14 @@ public class PhonemeCreator {
 
                 r.addResult(temp);
             }
-            System.out.println("getting results");
+            LOG.debug("getting results");
 
             // get the phonemes
             List<PhonemeContainer> phonemes = getPhonemes(r);
 
-            System.out.println("phoneme creation successful!");
+            LOG.debug("phoneme creation successful!");
 
             // set the public data base to the phonemes
-            PhonemeDB pdb = new PhonemeDB();
             pdb.setPhonemes(getPhonemes(r));
 
             // add the phonemes to the database
@@ -246,17 +226,17 @@ public class PhonemeCreator {
                 o.writeObject(pdb);
 
             } catch (IOException e) {
-                System.err.println(e.getMessage());
+                LOG.error("failed to serialize phoneme database {}.ser, error: {}",
+                        sentenceFile, e.getMessage());
             } finally {
                 IOUtils.closeQuietly(fos);
                 IOUtils.closeQuietly(o);
             }
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOG.error("failed to load sentence file {}. PhonemeDB is still empty.", sentenceFile);
         } finally {
             IOUtils.closeQuietly(in);
         }
-
     }
 }
