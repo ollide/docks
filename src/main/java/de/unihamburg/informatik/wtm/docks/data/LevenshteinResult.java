@@ -27,30 +27,18 @@ package de.unihamburg.informatik.wtm.docks.data;
  * @author 7twiefel
  */
 
-@SuppressWarnings("rawtypes")
 public class LevenshteinResult implements Comparable {
+
     private int distance;
-    private int id;
-
-    private int matchingId;
+    private int index;
 
     /**
-     * @return input index
+     * @param distance Levenshtein distance
+     * @param index    index of reference in a given list
      */
-    public int getMatchingId() {
-        return matchingId;
-    }
-
-    /**
-     * @param distance   Levenshtein distance
-     * @param id         index of reference in a given list
-     * @param matchingId of the input index in a given list
-     */
-    public LevenshteinResult(int distance, int id, int matchingId) {
-        super();
+    public LevenshteinResult(int distance, int index) {
         this.distance = distance;
-        this.id = id;
-        this.matchingId = matchingId;
+        this.index = index;
     }
 
     /**
@@ -63,20 +51,20 @@ public class LevenshteinResult implements Comparable {
     /**
      * @return reference index
      */
-    public int getId() {
-        return id;
+    public int getIndex() {
+        return index;
     }
 
     @Override
-    public int compareTo(Object arg0) {
-        // TODO Auto-generated method stub
-        LevenshteinResult otherResult = (LevenshteinResult) arg0;
-        if (this.distance < otherResult.distance)
+    public int compareTo(Object o) {
+        LevenshteinResult otherResult = (LevenshteinResult) o;
+        if (this.distance < otherResult.distance) {
             return -1;
-        else if (this.distance == otherResult.distance)
+        } else if (this.distance == otherResult.distance) {
             return 0;
-        else
+        } else {
             return 1;
+        }
     }
 
 }

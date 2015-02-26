@@ -85,66 +85,37 @@ public class SentencelistPostProcessor implements PostProcessor {
      * @param r the result
      */
     @Override
-    @SuppressWarnings("unchecked")
     public Result recognizeFromResult(Result r) {
-        // get phonemes for r
+        LOG.debug("recognize from result");
         List<PhonemeContainer> phonemesSpeech = pc.getPhonemes(r);
+        Result result = new Result();
+
         if (phonemesSpeech != null) {
 
             LOG.debug("calculating levenshtein distances");
-
-            int minDist = 10000;
-            int result = -1;
-
             LOG.debug("phonemesGrammar.size: {}", phonemesGrammar.size());
 
-            // if one result is preferred
-            if (numberOfResults == 1) {
-                // calculate Levenshtein distance for n-best list vs sentence list
-                // take the minimal distance
-                for (int i = 0; i < phonemesSpeech.size(); i++) {
-                    for (int j = 0; j < phonemesGrammar.size(); j++) {
-                        int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
-                                phonemesGrammar.get(j).getPhonemes());
-                        if (diff <= minDist) {
-                            if (diff < minDist) {
-                                minDist = diff;
-                                result = j;
-                            }
-                        }
-                    }
+            List<LevenshteinResult> resultList = new ArrayList<LevenshteinResult>();
+
+            for (PhonemeContainer pSpeech : phonemesSpeech) {
+                for (int i = 0; i < phonemesGrammar.size(); i++) {
+                    int diff = Levenshtein.diff(pSpeech.getPhonemes(), phonemesGrammar.get(i).getPhonemes());
+                    resultList.add(new LevenshteinResult(diff, i));
                 }
-
-                LOG.info("result is : {}", result);
-                //return sentence with the minimal distance
-                //phonemesGrammar.get(result).print();
-                r = new Result();
-                r.addResult(phonemesGrammar.get(result).getResult());
-
-            } else {
-                //do the same if more results are preferred
-                List<LevenshteinResult> resultList = new ArrayList<LevenshteinResult>();
-                for (int i = 0; i < phonemesSpeech.size(); i++) {
-                    for (int j = 0; j < phonemesGrammar.size(); j++) {
-                        int diff = Levenshtein.diff(phonemesSpeech.get(i).getPhonemes(),
-                                phonemesGrammar.get(j).getPhonemes());
-                        resultList.add(new LevenshteinResult(diff, j, i));
-                    }
-                }
-
-                //sort the list of results by smallest distance
-                Collections.sort(resultList);
-                r = new Result();
-
-                for (int i = 0; (i < numberOfResults) && (i < resultList.size()); i++) {
-                    r.addResult(phonemesGrammar.get(resultList.get(i).getId()).getResult());
-                }
-
             }
-            LOG.debug("levenshtein distances calculated");
 
+            // sort the list of results by smallest distance
+            Collections.sort(resultList);
+
+            for (int i = 0; (i < numberOfResults) && (i < resultList.size()); i++) {
+                LevenshteinResult lr = resultList.get(i);
+                PhonemeContainer pc = phonemesGrammar.get(lr.getIndex());
+
+                result.addResult(pc.getResult());
+            }
         }
-        return r;
+        LOG.debug("levenshtein distances calculated");
+        return result;
     }
 
     /**
