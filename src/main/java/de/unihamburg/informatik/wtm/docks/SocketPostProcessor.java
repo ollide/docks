@@ -39,6 +39,23 @@ public class SocketPostProcessor {
 
     private static final Logger LOG = LoggerFactory.getLogger(SocketPostProcessor.class);
 
+    /**
+     * Creates a socket server which will pass incoming requests to the
+     * DOCKS sentence list post processor. A request consists of a
+     * (domain specific) sentence list and the n-best list of hypotheses
+     * from Google Search by Voice. List entries have to be separated
+     * by the pipe character '|' and the two lists by three equal signs
+     * '==='. Example request:
+     * "go left|go right===go left|goal left|go to left|goal to left"
+     * <p/>
+     * It will then return the sentence with the least phonetic
+     * Levenshtein distance to a Google hypothesis, together with
+     * a confidence estimate. Example response:
+     * "go left===1.0"
+     *
+     * @param args optional params
+     *             args[0] overrides the default socket port (54015)
+     */
     public static void main(String[] args) {
         int port = PORT;
         if (args != null && args.length > 0) {
