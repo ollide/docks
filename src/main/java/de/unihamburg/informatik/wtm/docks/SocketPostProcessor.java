@@ -89,7 +89,7 @@ public class SocketPostProcessor {
                 Result r = sp.recognizeFromResult(googleResult);
 
                 String bestResult = r.getBestResult();
-                float confidence = r.getConfidence();
+                String confidence = String.format("%.02f", r.getConfidence());
 
                 LOG.debug("returning best result: {}, with confidence: {}", bestResult, confidence);
                 out.println(bestResult + "===" + confidence);
