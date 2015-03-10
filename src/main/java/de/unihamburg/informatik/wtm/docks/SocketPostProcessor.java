@@ -91,7 +91,7 @@ public class SocketPostProcessor {
                 String bestResult = r.getBestResult();
                 float confidence = r.getConfidence();
 
-                LOG.debug("returning best result: {}, with confidence: ", bestResult, confidence);
+                LOG.debug("returning best result: {}, with confidence: {}", bestResult, confidence);
                 out.println(bestResult + "===" + confidence);
             }
         } catch (Exception e) {
