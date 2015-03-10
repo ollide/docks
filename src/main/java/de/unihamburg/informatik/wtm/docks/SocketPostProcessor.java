@@ -72,8 +72,10 @@ public class SocketPostProcessor {
                 Result r = sp.recognizeFromResult(googleResult);
 
                 String bestResult = r.getBestResult();
-                LOG.debug("returning best result: {}", bestResult);
-                out.println(bestResult);
+                float confidence = r.getConfidence();
+
+                LOG.debug("returning best result: {}, with confidence: ", bestResult, confidence);
+                out.println(bestResult + "===" + confidence);
             }
         } catch (Exception e) {
             LOG.error("error: ", e.getMessage());
