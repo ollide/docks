@@ -1,4 +1,4 @@
-# DOCKS framework #
+# DOCKS framework [![Build Status](https://travis-ci.org/ollide/docks.svg?branch=master)](https://travis-ci.org/ollide/docks) #
 
 DOCKS is a framework for post-processing results of Cloud-based speech recognition systems.
 
