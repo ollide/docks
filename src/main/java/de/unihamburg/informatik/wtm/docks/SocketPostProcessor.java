@@ -32,6 +32,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 public class SocketPostProcessor {
 
@@ -89,7 +90,7 @@ public class SocketPostProcessor {
                 Result r = sp.recognizeFromResult(googleResult);
 
                 String bestResult = r.getBestResult();
-                String confidence = String.format("%.02f", r.getConfidence());
+                String confidence = String.format(Locale.US, "%.02f", r.getConfidence());
 
                 LOG.debug("returning best result: {}, with confidence: {}", bestResult, confidence);
                 out.println(bestResult + "===" + confidence);
