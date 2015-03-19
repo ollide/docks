@@ -114,6 +114,7 @@ public class SentencelistPostProcessor implements PostProcessor {
                     LOG.debug("Best result phoneme length: {}", resultPhonemeLength);
 
                     result.setConfidence(confidence);
+                    result.setRawResult(pc.getRawResult());
                 }
             }
         }

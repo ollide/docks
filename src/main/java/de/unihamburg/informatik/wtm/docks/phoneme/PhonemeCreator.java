@@ -145,10 +145,10 @@ public class PhonemeCreator {
 
         Printer.printWithTimeF(TAG, "formatting raw results");
         // convert all results to lowercase and remove special characters
-        for (String s : rawResults) {
-            Printer.printWithTimeF(TAG, "raw result: " + s);
+        for (String rawResult : rawResults) {
+            Printer.printWithTimeF(TAG, "raw result: " + rawResult);
 
-            s = s.replaceAll("[^a-zA-Z 0-9]", "");
+            String s = rawResult.replaceAll("[^a-zA-Z 0-9]", "");
             s = s.replaceAll(" +", " ");
             if ("".equals(s)) {
                 rawResults.remove(s);
@@ -162,6 +162,7 @@ public class PhonemeCreator {
             String[] words = s.toLowerCase().split(" ");
 
             PhonemeContainer pc = new PhonemeContainer(words);
+            pc.setRawResult(rawResult);
 
             ArrayList<Path> paths = g2pDecoder.phoneticize(s, 1);
             Path p = paths.get(0);

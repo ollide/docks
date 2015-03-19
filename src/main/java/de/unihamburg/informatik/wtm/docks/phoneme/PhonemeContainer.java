@@ -33,6 +33,7 @@ public class PhonemeContainer implements Serializable {
 
     private static final long serialVersionUID = 3851781084055799229L;
     private String[] phonemes;
+    private String rawResult = null;
     private String[] words;
     private String[] phonemesSorted;
     private ArrayList<String> phonemesList = new ArrayList<String>();
@@ -48,7 +49,10 @@ public class PhonemeContainer implements Serializable {
         super();
         this.words = words;
         phonemesSorted = new String[words.length];
+    }
 
+    public void setRawResult(String rawResult) {
+        this.rawResult = rawResult;
     }
 
     /**
@@ -144,6 +148,14 @@ public class PhonemeContainer implements Serializable {
 
         }
         return result;
+    }
+
+    public String getRawResult() {
+        if (rawResult != null) {
+            return rawResult;
+        } else {
+            return getResult();
+        }
     }
 
 }

@@ -89,7 +89,7 @@ public class SocketPostProcessor {
                 SentencelistPostProcessor sp = new SentencelistPostProcessor(expectedResults, 1);
                 Result r = sp.recognizeFromResult(googleResult);
 
-                String bestResult = r.getBestResult();
+                String bestResult = r.getRawResult();
                 String confidence = String.format(Locale.US, "%.02f", r.getConfidence());
 
                 LOG.debug("returning best result: {}, with confidence: {}", bestResult, confidence);

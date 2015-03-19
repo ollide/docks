@@ -52,6 +52,7 @@ public class Result implements Serializable {
     private static final Logger LOG = LoggerFactory.getLogger(Result.class);
 
     private List<String> resultList = new ArrayList<String>();
+    private String rawResult;
     private float confidence;
 
     private String hypPhoneme;
@@ -171,6 +172,14 @@ public class Result implements Serializable {
             IOUtils.closeQuietly(fstream);
             IOUtils.closeQuietly(out);
         }
+    }
+
+    public String getRawResult() {
+        return rawResult;
+    }
+
+    public void setRawResult(String rawResult) {
+        this.rawResult = rawResult;
     }
 
     /**
